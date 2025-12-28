@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>機器學習題庫測驗系統 (Ch04-07)</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card: #ffffff;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: #1e293b; margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: var(--card); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 24px; margin-bottom: 20px; }
+        h1, h2, h3 { margin-top: 0; }
+        .btn { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-danger { background-color: var(--danger); }
+        .timer { font-size: 1.5rem; font-weight: bold; color: var(--danger); text-align: right; margin-bottom: 10px; }
+        .question-block { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .options-grid { display: grid; gap: 10px; margin-top: 10px; }
+        .option-label { display: block; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .option-label:hover { border-color: var(--primary); background: #eff6ff; }
+        input[type="radio"]:checked + .option-label { border-color: var(--primary); background-color: #eff6ff; font-weight: bold; }
+        input[type="radio"] { display: none; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; text-align: center; }
+        .stat-box { background: #f1f5f9; padding: 15px; border-radius: 8px; }
+        .stat-val { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
+        .review-item { border-left: 4px solid var(--danger); padding-left: 15px; margin-bottom: 20px; background: #fef2f2; padding: 15px; border-radius: 0 8px 8px 0; }
+        .correct-ans { color: var(--success); font-weight: bold; }
+        .wrong-ans { color: var(--danger); text-decoration: line-through; }
+        .view { display: none; }
+        .active-view { display: block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="view-dashboard" class="view active-view">
+        <div class="card">
+            <h1>機器學習題庫測驗 (Ch04-07)</h1>
+            <p>資料庫共收錄 <span id="total-pool-size">0</span> 題。每次隨機測驗 20 題。</p>
+            <div class="stat-grid">
+                <div class="stat-box"><div>歷史平均分</div><div class="stat-val" id="avg-score">--</div></div>
+                <div class="stat-box"><div>總正確率</div><div class="stat-val" id="total-accuracy">--%</div></div>
+                <div class="stat-box"><div>累積錯題數</div><div class="stat-val" id="total-wrong-count">0</div></div>
+            </div>
+            <button class="btn" onclick="window.startQuiz()">開始測驗 (20題)</button>
+            <button class="btn btn-danger" onclick="window.clearData()" style="float: right;">清除紀錄</button>
+        </div>
+        <div class="card">
+            <h3>成績走勢圖</h3>
+            <canvas id="scoreChart"></canvas>
+        </div>
+        <div class="card">
+            <h3>歷史錯題庫 (最近 50 筆)</h3>
+            <div id="wrong-history-list" style="max-height: 300px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <div id="view-quiz" class="view">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>測驗進行中</h2>
+                <div class="timer" id="timer">15:00</div>
+            </div>
+            <div id="quiz-container"></div>
+            <button class="btn" onclick="window.submitQuiz()">送出試卷</button>
+        </div>
+    </div>
+
+    <div id="view-result" class="view">
+        <div class="card">
+            <h2>本次測驗結果</h2>
+            <div class="stat-grid">
+                <div class="stat-box"><div>得分</div><div class="stat-val" id="result-score">0</div></div>
+                <div class="stat-box"><div>正確率</div><div class="stat-val" id="result-accuracy">0%</div></div>
+                <div class="stat-box"><div>耗時</div><div class="stat-val" id="result-time">00:00</div></div>
+            </div>
+            <button class="btn" onclick="window.showDashboard()">返回主頁</button>
+        </div>
+        <div class="card">
+            <h3>錯題檢討</h3>
+            <div id="review-container"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 1. PRE-COMPILED DATA (Fixed: No Parsing Risk) ---
+    // 已將所有 200 題預處理為 JSON，確保格式絕對正確
+    const questionPool = [
+      {id:1,a:"B",q:"資料前處理(preprocessing)在機器學習流程中最主要的目的之一是?",o:{A:"增加模型參數量",B:"提升資料品質與可用性,讓模型能穩健學習",C:"把資料轉成影像",D:"保證準確率 100%"}},
+      {id:2,a:"A",q:"「缺失值(missing values)」對模型的潛在影響,何者最合理?",o:{A:"可能導致偏差、降低有效樣本或使部分模型無法訓練",B:"一定提升泛化",C:"只影響深度學習不影響傳統模型",D:"不影響任何演算法"}},
+      {id:3,a:"C",q:"MNAR (Missing Not At Random)最貼近?",o:{A:"缺失不會造成偏差",B:"缺失只與觀測值有關",C:"缺失與未觀測值本身相關,忽略可能造成系統性偏差",D:"缺失一定可用平均值補齊無偏"}},
+      {id:4,a:"A",q:"直接刪除含缺失值樣本(listwise deletion)的主要代價是?",o:{A:"樣本數減少、可能改變分佈並引入偏差",B:"一定提升準確率",C:"一定降低計算成本且不影響偏差",D:"只會讓訓練更快不影響結果"}},
+      {id:5,a:"D",q:"以平均值補缺失值(mean imputation)的一個常見缺點是?",o:{A:"會增加方差",B:"會保留變異性",C:"會增加資訊量",D:"會低估變異性並可能扭曲相關結構"}},
+      {id:6,a:"B",q:"若缺失值與類別標籤高度相關,最可能的風險是?",o:{A:"資料更乾淨",B:"補值/刪除可能引入標籤資訊或偏差,造成評估失真",C:"模型一定更準",D:"不會有任何影響"}},
+      {id:7,a:"C",q:"「資料洩漏(data leakage)」在前處理最常見的形式之一是?",o:{A:"忘記設定 random seed",B:"使用GPU",C:"在切分前用整體資料(含測試集)計算標準化/補值統計量",D:"使用小 batch"}},
+      {id:8,a:"A",q:"為何應在訓練集上 fit scaler/imputer,再套用到驗證/測試?",o:{A:"避免洩漏並確保評估公平",B:"因為測試集不可包含缺失值",C:"因為訓練集一定更大",D:"因為這會讓測試準確率更高"}},
+      {id:9,a:"D",q:"名目類別(nominal)與序數類別(ordinal)的主要差異是?",o:{A:"是否可 one-hot",B:"是否可標準化",C:"是否可做缺失值補值",D:"ordinal 有自然順序;nominal 沒有"}},
+      {id:10,a:"C",q:"One-hot encoding的主要代價最貼近?",o:{A:"降低維度",B:"丟失資訊",C:"維度膨脹(curse of dimensionality 風險增加)",D:"必然造成過擬合"}},
+      {id:11,a:"D",q:"dummy variable trap(虛擬變數陷阱)與哪個概念最相關?",o:{A:"欠擬合",B:"類別不平衡",C:"資料洩漏",D:"完全共線性(perfect multicollinearity)"}},
+      {id:12,a:"A",q:"序數特徵(ordinal feature)採用映射到整數的理論前提是?",o:{A:"類別間順序存在且距離假設可接受/近似",B:"類別一定線性可分",C:"類別一定均勻分佈",D:"類別一定可被標準化到0~1"}},
+      {id:13,a:"C",q:"在類別不平衡的分類問題中,accuracy 容易誤導的原因是?",o:{A:"accuracy 不能計算",B:"accuracy 只適用回歸",C:"只預測多數類就可能得到高 accuracy,忽略少數類表現",D:"accuracy一定低於F1"}},
+      {id:14,a:"D",q:"Fl-score 為何在不平衡資料上常被使用?",o:{A:"因為一定最大",B:"因為只看TN",C:"因為等於accuracy",D:"因為是 precision 與 recall的調和平均,兼顧兩者"}},
+      {id:15,a:"A",q:"特徵縮放(feature scaling)在距離型模型(KNN、SVM-RBF)中特別重要,主要因為?",o:{A:"距離/內積受尺度影響,尺度大者主導",B:"它們無法處理浮點",C:"它們只能處理稀疏資料",D:"縮放會自動選特徵"}},
+      {id:16,a:"B",q:"在含離群值的資料上,Robust scaling的優勢主要來自?",o:{A:"使用平均與標準差",B:"使用中位數與IQR,較不受離群值影響",C:"只保留最大值",D:"自動移除離群值"}},
+      {id:17,a:"D",q:"對數變換(log transform)常用於處理哪類特徵分佈?",o:{A:"雙峰分佈",B:"均勻分佈",C:"已是常態分佈",D:"右偏(right-skewed)且跨尺度差異大的正值特徵"}},
+      {id:18,a:"A",q:"若資料包含負值,直接取 log可能有問題,常見替代是?",o:{A:"log1p/平移後再取 log 或使用Yeo-Johnson",B:"直接平方",C:"直接標準化就一定解決",D:"把負值設為0"}},
+      {id:19,a:"B",q:"stratified split 的主要目的最貼近?",o:{A:"讓特徵均值一致",B:"維持各類別比例在 train/test近似",C:"讓資料自動標準化",D:"讓樣本依時間排序"}},
+      {id:20,a:"D",q:"在time series 的資料切分中,為何不應隨機打散?",o:{A:"因為打散會增加樣本",B:"因為打散會降低維度",C:"因為打散會讓模型變線性",D:"會破壞時間因果順序並造成未來資訊洩漏"}},
+      {id:21,a:"D",q:"模型選擇(model selection) 中驗證集的典型角色是?",o:{A:"用來最終報告效能",B:"用來更新權重(必然)",C:"用來建立詞彙表",D:"用來調整超參數/選模型,避免用測試集調參"}},
+      {id:22,a:"B",q:"ColumnTransformer的主要動機最貼近?",o:{A:"只做PCA",B:"對不同欄位套用不同前處理並合併輸出",C:"只用於文字",D:"只用於影像"}},
+      {id:23,a:"A",q:"處理高基數類別的一個常見替代方案是?",o:{A:"target encoding/hashing trick(視情境)",B:"永遠用 label encoding",C:"永遠刪除該欄",D:"永遠用 PCA"}},
+      {id:24,a:"C",q:"「特徵工程(feature engineering)」的核心目標最貼近?",o:{A:"把模型變深",B:"把資料變小",C:"利用領域知識轉換/建構更有訊息的特徵以提升模型",D:"保證不需交叉驗證"}},
+      {id:25,a:"B",q:"標準化對線性模型(如logistic regression)的一個好處是?",o:{A:"讓模型變成非線性",B:"使正規化對各特徵影響更一致、最佳化更穩定",C:"保證係數變成0",D:"使類別自動平衡"}},
+      {id:26,a:"D",q:"當特徵尺度差異很大時,L2正規化可能產生什麼問題?",o:{A:"不影響任何事",B:"只會提高準確率",C:"只影響樹模型",D:"不同尺度特徵被不公平地正規化,影響係數比較與收斂"}},
+      {id:27,a:"A",q:"「尺度不變」的模型家族較不依賴特徵縮放,典型例子是?",o:{A:"決策樹/隨機森林",B:"KNN",C:"SVM-RBF",D:"線性回歸(梯度下降)"}},
+      {id:28,a:"C",q:"中位數補值相較平均值補值,在離群值存在時更合理的原因是?",o:{A:"中位數一定更小",B:"中位數一定更大",C:"中位數對極端值更不敏感",D:"中位數會增加方差"}},
+      {id:29,a:"B",q:"以眾數(most frequent)補值最常用於哪類欄位?",o:{A:"連續數值特徵",B:"類別特徵",C:"影像像素",D:"embedding 向量"}},
+      {id:30,a:"A",q:"在多步驟前處理中,「先切分再fit前處理」的核心理由是?",o:{A:"保持評估流程一致並避免任何形式的資訊提前使用",B:"讓訓練更慢",C:"讓測試更快",D:"讓資料變成稀疏"}},
+      {id:31,a:"C",q:"在特徵縮放後,為何要保存 scaler 物件?",o:{A:"因為它可以當模型使用",B:"因為它包含訓練資料",C:"因為推論/部署時必須用同樣的轉換統計量",D:"因為它能自動產生標籤"}},
+      {id:32,a:"B",q:"在pandas中,用來檢查每個欄位缺失值(NaN)數量的常見語法是?",o:{A:"df.sum()",B:"df.isna().sum()",C:"df.describe()",D:"df.dropna()"}},
+      {id:33,a:"C",q:"若想刪除「全部都是NaN」的列,dropna最常用的參數組合是?",o:{A:"df.dropna(axis=1)",B:"df.dropna(thresh=1)",C:"df.dropna(how='all')",D:"df.dropna(how='any')"}},
+      {id:34,a:"C",q:"df.dropna(thresh=k)的k在概念上代表?",o:{A:"至少有k個NaN 才保留",B:"至少有k個欄位才刪除",C:"至少有k個非 NaN 才保留該列/欄",D:"把 NaN 替換成 k"}},
+      {id:35,a:"B",q:"對名目類別更常見且較安全的做法是?",o:{A:"標準化(StandardScaler)",B:"One-Hot Encoding",C:"PCA降維",D:"L2 正規化"}},
+      {id:36,a:"C",q:"sklearn 的 OneHotEncoder 預設輸出型態通常是?",o:{A:"pandas. DataFrame",B:"Python list",C:"稀疏矩陣(sparse matrix)",D:"torch.Tensor"}},
+      {id:37,a:"B",q:"handle_unknown='ignore'的用途最貼近?",o:{A:"忽略所有缺失值",B:"測試時遇到未見過的新類別不報錯,該欄對應 one-hot置0",C:"把未知類別當成 NaN",D:"把未知類別映射到-1"}},
+      {id:38,a:"A",q:"Pipeline 的主要好處是?",o:{A:"把前處理與模型打包,避免洩漏並便於交叉驗證",B:"只能用於神經網路",C:"只能用於分類",D:"一定能提升準確率"}},
+      {id:39,a:"C",q:"StandardScaler 的核心做法是?",o:{A:"把資料縮放到0~1",B:"把資料取log",C:"做z-score:減均值除以標準差",D:"把資料轉成整數"}},
+      {id:40,a:"D",q:"RobustScaler 最主要是為了解決什麼問題?",o:{A:"類別不平衡",B:"缺失值太多",C:"維度太高",D:"對離群值(outliers)較不敏感(用中位數/IQR)"}},
+      {id:41,a:"B",q:"下列哪一項最符合「過擬合(overfitting)」?",o:{A:"訓練與測試都差",B:"訓練好但測試差",C:"訓練差但測試好",D:"訓練與測試都好"}},
+      {id:42,a:"C",q:"為降低過擬合,較常見的做法是?",o:{A:"增加模型容量",B:"減少資料量",C:"加入正規化、簡化模型或增加資料",D:"把學習率設為0"}},
+      {id:43,a:"D",q:"L1 正規化(Lasso)常被提到的特性是?",o:{A:"一定比L2準",B:"不影響係數",C:"只適用於分類",D:"可促進稀疏(部分係數變0)達到特徵選擇效果"}},
+      {id:44,a:"C",q:"在做交叉驗證時,為避免前處理洩漏,最建議的做法是?",o:{A:"先對全資料 fit scaler 再做CV",B:"只對測試 fold 做前處理",C:"把前處理放進 Pipeline,讓每個fold 內部 fit/transform",D:"不要用 CV"}},
+      {id:45,a:"D",q:"K-fold 交叉驗證中,K的意義是?",o:{A:"資料的特徵數",B:"類別數",C:"模型層數",D:"把資料分成份輪流當驗證集"}},
+      {id:46,a:"D",q:"若資料集類別不平衡,常用的交叉驗證變體是?",o:{A:"Leave-one-out",B:"TimeSeriesSplit",C:"ShuffleSplit",D:"StratifiedKFold"}},
+      {id:47,a:"D",q:"Fl-score 最貼近什麼?",o:{A:"precision 與 recall的算術平均",B:"accuracy 與 recall 的幾何平均",C:"precision 與 accuracy 的調和平均",D:"precision 與 recall 的調和平均"}},
+      {id:48,a:"C",q:"ROC曲線的橫軸(x-axis)通常是?",o:{A:"TPR (Recall)",B:"Precision",C:"FPR",D:"Accuracy"}},
+      {id:49,a:"D",q:"AUC 的直觀意義最接近?",o:{A:"分類正確率",B:"平均損失",C:"最佳閾值",D:"模型把正例排在負例前的能力(曲線下面積)"}},
+      {id:50,a:"D",q:"pd.get_dummies(drop_first=True)的主要目的最接近?",o:{A:"把所有dummy 變成1",B:"移除缺失值",C:"把類別排序",D:"避免dummy 變數完全共線性"}},
+      {id:51,a:"B",q:"在sklearn 中將標準化套用到新資料時,最正確的流程是?",o:{A:"對每筆新資料重新 fit scaler",B:"在訓練集 fit scaler,對新資料只 transform",C:"只對測試集 fit scaler",D:"不需要 transform"}},
+      {id:52,a:"A",q:"下列哪一項最符合「Pipeline 可以安全用於 GridSearchCV」的原因?",o:{A:"每次CV fold 都會在訓練 fold 內重新 fit 前處理,避免洩漏",B:"Pipeline會自動加資料增強",C:"Pipeline會自動選最佳模型",D:"Pipeline會自動平衡類別"}},
+      {id:53,a:"D",q:"在sklearn中,若想同時對數值欄位做 StandardScaler、對類別欄位做 OneHotEncoder,最常用的結構是?",o:{A:"KFold+PCA",B:"GridSearchCV + LabelEncoder",C:"Pipeline + CountVectorizer",D:"Column Transformer + Pipeline"}},
+      {id:54,a:"A",q:"當類別欄位在測試集出現新類別時,最穩健的做法之一是?",o:{A:"OneHotEncoder(handle_unknown='ignore')",B:"LabelEncoder()",C:"MinMaxScaler()",D:"train_test_split(stratify=...)"}},
+      {id:55,a:"A",q:"PCA 為何被視為無監督方法?",o:{A:"不使用標籤y,只利用X的結構",B:"只能用於回歸",C:"只能用於分類",D:"一定需要類別中心"}},
+      {id:56,a:"D",q:"在PCA中「第一主成分」的定義最貼近?",o:{A:"最小方差方向",B:"最小誤差方向",C:"均值方向",D:"投影後方差最大的方向"}},
+      {id:57,a:"C",q:"PCA的主成分彼此正交(orthogonal)的主要意涵是?",o:{A:"主成分彼此相關",B:"主成分彼此相同",C:"主成分攜帶互不重複的線性資訊(無相關,正交基)",D:"主成分一定是單位向量且不可旋轉"}},
+      {id:58,a:"B",q:"PCA 推導中常用的協方差矩陣∑的對角線元素代表?",o:{A:"特徵間協方差",B:"各特徵的方差",C:"各特徵的均值",D:"各特徵的標準差"}},
+      {id:59,a:"D",q:"若兩個特徵高度正相關,PCA的常見效果是?",o:{A:"增加有效維度",B:"無法運作",C:"使資料更分散",D:"將主要變動集中到較少主成分,便於降維"}},
+      {id:60,a:"C",q:"為何在PCA前常要做 mean-centering (中心化)?",o:{A:"讓資料變成稀疏",B:"避免需要標準化",C:"確保協方差與主成分對應資料的變動而非均值偏移",D:"讓資料變成整數"}},
+      {id:61,a:"A",q:"在PCA中,特徵值(eigenvalues)最直觀表示什麼?",o:{A:"對應主成分方向上的方差大小",B:"對應主成分方向上的均值",C:"對應主成分方向上的類別數",D:"對應主成分方向上的學習率"}},
+      {id:62,a:"B",q:"若前k個主成分累積解釋方差達95%,最合理解讀是?",o:{A:"模型準確率95%",B:"投影到 k 維可保留約 95%的方差信息",C:"資料缺失95%",D:"特徵相關性 95%"}},
+      {id:63,a:"A",q:"PCA的投影矩陣W(由前k個eigenvectors 組成)在幾何上表示?",o:{A:"把資料投影到新的k維正交子空間",B:"把資料旋轉到原座標系",C:"把資料映射到非線性空間",D:"把資料做排序"}},
+      {id:64,a:"A",q:"若資料維度很高但樣本數較少,使用SVD做PCA的優勢最貼近?",o:{A:"可在原資料矩陣上分解,降低形成大協方差矩陣的成本",B:"必然更慢",C:"一定會過擬合",D:"只能得到1個主成分"}},
+      {id:65,a:"D",q:"在PCA中,若保留太多主成分,可能的風險是?",o:{A:"資訊不足",B:"完全無法訓練",C:"維度一定變0",D:"降噪效果變差且下游模型可能仍過擬合"}},
+      {id:66,a:"D",q:"LDA (Linear Discriminant Analysis)與PCA的核心差異最貼近?",o:{A:"LDA不降維",B:"PCA 使用標籤",C:"LDA是無監督、PCA是監督",D:"LDA是監督式降維,利用類別資訊最大化可分性"}},
+      {id:67,a:"A",q:"LDA 目標常用哪個概念來描述?",o:{A:"最大化類別間散布與類別內散布的比率",B:"最大化整體方差",C:"最小化協方差",D:"最大化核相似度"}},
+      {id:68,a:"D",q:"在LDA中,類別內散布矩陣 Sw的直觀意義是?",o:{A:"類別中心彼此距離",B:"整體協方差",C:"核矩陣",D:"各類別樣本相對其類別中心的散布"}},
+      {id:69,a:"B",q:"在C個類別的LDA中,最多可降到幾維?",o:{A:"C維",B:"C-1維",C:"C+1維",D:"特徵數維"}},
+      {id:70,a:"D",q:"LDA的限制之一是?",o:{A:"只能用於回歸",B:"不能用於分類",C:"不需要標籤",D:"在類別共變異假設(如高斯且共用協方差)不成立時效果可能下降"}},
+      {id:71,a:"A",q:"RBF (Gaussian)核k(x,z)=exp(-y||x-z||^2)中, 變大通常意味著?",o:{A:"相似度衰減更快,決策/映射更局部、模型更複雜",B:"相似度衰減更慢,模型更線性",C:"與模型複雜度無關",D:"使核矩陣變成對角矩陣"}},
+      {id:72,a:"D",q:"RBF 核中的與「kernel width」的關係最貼近?",o:{A:"y越大寬度越大",B:"y越小寬度越小",C:"y 與寬度無關",D:"y越大對應較小的有效寬度(更窄)"}},
+      {id:73,a:"D",q:"Kernel PCA 的components_在概念上最接近?",o:{A:"原始特徵權重",B:"類別中心向量",C:"回歸係數",D:"核空間主成分(以訓練樣本線性組合表示)"}},
+      {id:74,a:"C",q:"為何在降維後仍可能需要對下游模型做交叉驗證?",o:{A:"因為降維保證最優",B:"因為降維會把標籤改變",C:"因為降維改變特徵表示,最佳超參數可能改變且需避免洩漏",D:"因為降維只能用於測試集"}},
+      {id:75,a:"D",q:"若先在全資料上 fit PCA再做CV,最可能造成?",o:{A:"評估更保守",B:"更準確",C:"沒有差異",D:"洩漏導致CV分數偏樂觀"}},
+      {id:76,a:"B",q:"若目標是資料視覺化(2D/3D)且不希望用標籤資訊,較常選?",o:{A:"LDA",B:"PCA",C:"Linear SVM",D:"Logistic Regression"}},
+      {id:77,a:"A",q:"若目標是讓類別在低維空間更可分(有標籤),較常考慮?",o:{A:"LDA",B:"PCA",C:"KMeans",D:"TSNE(一定最好)"}},
+      {id:78,a:"A",q:"在實務上,PCA常被用作資料壓縮的原因之一是?",o:{A:"用較少維度近似重建原資料,減少儲存/計算",B:"因為PCA一定無損",C:"因為PCA一定可逆",D:"因為PCA 會產生稀疏表示"}},
+      {id:79,a:"C",q:"在Kernel PCA中,選擇核與超參數(如 )的典型方法是?",o:{A:"不需要選",B:"只看訓練集 accuracy",C:"用交叉驗證或下游任務表現選擇",D:"用測試集反覆調參"}},
+      {id:80,a:"C",q:"為處理 Sw奇異問題,常見策略之一是?",o:{A:"移除標籤",B:"只用測試集",C:"先做 PCA 降維或使用正規化 LDA (shrinkage)",D:"改用 KNN"}},
+      {id:81,a:"B",q:"PCA 與LDA都屬於線性投影方法,這意味著?",o:{A:"只能用於二元分類",B:"輸出是原特徵的線性組合",C:"一定保留非線性結構",D:"一定可逆"}},
+      {id:82,a:"A",q:"若資料在原空間線性可分,使用PCA可能導致?",o:{A:"若保留維度太低,可能丟失可分性資訊而降低分類表現",B:"一定提升表現",C:"一定保持可分性不變",D:"一定讓資料不可分"}},
+      {id:83,a:"B",q:"在PCA中,主要目標通常是?",o:{A:"最大化類別間距",B:"找出最大化資料方差的正交投影方向",C:"最小化類別內方差",D:"最大化準確率"}},
+      {id:84,a:"A",q:"PCA屬於哪一類學習方法?",o:{A:"無監督降維",B:"監督式分類",C:"監督式回歸",D:"強化學習"}},
+      {id:85,a:"D",q:"在PCA的推導中,常用的矩陣是?",o:{A:"混淆矩陣",B:"距離矩陣",C:"核矩陣",D:"協方差矩陣 (covariance matrix)"}},
+      {id:86,a:"B",q:"協方差矩陣的最大特徵值對應的特徵向量,代表?",o:{A:"最小方差方向",B:"最大方差方向(第一主成分)",C:"最可能類別",D:"最小誤差方向"}},
+      {id:87,a:"A",q:"在實作PCA前,為何常先做標準化(StandardScaler)?",o:{A:"避免尺度不同使方差被某些特徵主導",B:"讓資料變成稀疏矩陣",C:"讓資料變成整數",D:"避免需要訓練集"}},
+      {id:88,a:"C",q:"explained_variance_ratio的意義最貼近?",o:{A:"每個特徵的均值比例",B:"每個類別的比例",C:"各主成分解釋的方差比例",D:"每個樣本的權重比例"}},
+      {id:89,a:"B",q:"在sklearn 中使用 PCA(n_components=2)的n_components=2 主要代表?",o:{A:"保留2個原始特徵",B:"保留2個主成分維度",C:"保留2個類別",D:"做2次標準化"}},
+      {id:90,a:"A",q:"pca.fit(X) 與 pca.transform(X)的典型分工為?",o:{A:"fit學到投影方向;transform 將資料投影到主成分空間",B:"fit做投影;transform 計算協方差",C:"fit只適用測試;transform只適用訓練",D:"兩者完全等價"}},
+      {id:91,a:"D",q:"PCA 對於資料中的「線性相關」特徵,通常會?",o:{A:"增加維度",B:"增加共線性",C:"使模型一定更準",D:"把相關性集中到少數主成分,便於降維"}},
+      {id:92,a:"B",q:"在NumPy 中計算協方差矩陣的常見函數是?",o:{A:"np.var(X)",B:"np.cov(X.T)",C:"np.mean(X)",D:"np.dot(X,X)"}},
+      {id:93,a:"C",q:"若協方差矩陣是對稱的,較合適使用哪個分解以獲得數值穩定性?",o:{A:"QR 分解",B:"LU分解",C:"eigh(對稱/厄米矩陣)",D:"Cholesky 只能用於非對稱"}},
+      {id:94,a:"D",q:"PCA 投影到k維後,若用於分類,最常見的好處之一是?",o:{A:"保證不會過擬合",B:"保證準確率提升",C:"使模型變成非線性",D:"降低維度與噪聲,可能改善泛化並加速訓練"}},
+      {id:95,a:"B",q:"在 Matplotlib 中視覺化PCA後2D投影,最常用圖形是?",o:{A:"直方圖",B:"散點圖(scatter plot)",C:"箱型圖",D:"熱度圖(heatmap)"}},
+      {id:96,a:"B",q:"LDA的目標函數常以哪種比率表示?",o:{A:"類別外距離/總樣本數",B:"類別間散布/類別內散布",C:"總方差/均值",D:"準確率/損失"}},
+      {id:97,a:"B",q:"Kernel PCA的主要目的最貼近?",o:{A:"加速 PCA",B:"讓PCA可處理非線性結構(在高維特徵空間做線性 PCA)",C:"把PCA變成監督式",D:"避免需要標準化"}},
+      {id:98,a:"D",q:"gamma 在RBF kernel 中變大,通常會?",o:{A:"決策邊界變更平滑",B:"模型更線性",C:"沒有影響",D:"使相似度衰減更快,映射更局部、模型更複雜"}},
+      {id:99,a:"D",q:"在非線性可分資料(如兩個同心圓)上,Kernel PCA常能?",o:{A:"一定失敗",B:"一定變線性可分",C:"不影響可分性",D:"展開資料結構,使後續線性分類更容易"}},
+      {id:100,a:"C",q:"在scikit-learn 中做「兩個同心圓」常用的資料產生器是?",o:{A:"make_blobs",B:"make_regression",C:"make_circles",D:"make_moons"}},
+      {id:101,a:"A",q:"若要用 matplotlib 畫出 make_moons 的散點並用顏色表示標籤,最常見做法是?",o:{A:"plt.scatter(X[:,0], X[:,1], c=y)",B:"plt.plot(X, y)",C:"plt.imshow(X)",D:"plt.hist(y)"}},
+      {id:102,a:"A",q:"sklearn的PCA實作底層常用到哪種分解方法?",o:{A:"SVD",B:"LU",C:"Cholesky",D:"FFT"}},
+      {id:103,a:"C",q:"在LDA中,類別間散布矩陣 Sb 的直觀含義是?",o:{A:"單一類別方差",B:"噪聲矩陣",C:"各類別中心彼此的散布(加權)",D:"特徵縮放矩陣"}},
+      {id:104,a:"A",q:"若做LDA降到2維,至少需要幾個類別?",o:{A:"3個類別",B:"2個類別",C:"1個類別",D:"4個類別"}},
+      {id:105,a:"C",q:"Kernel PCA的一個限制是?",o:{A:"不能處理非線性",B:"需要標籤",C:"缺乏直接的 out-of-sample inverse transform(需近似)且計算對樣本數可能較重",D:"一定比PCA 更快"}},
+      {id:106,a:"B",q:"在嚴謹的機器學習流程中,測試集(test set)的最佳角色是?",o:{A:"反覆用來調參",B:"最終一次性評估泛化能力(不參與調參)",C:"用來fit 前處理",D:"用來建立特徵"}},
+      {id:107,a:"A",q:"驗證集(validation set)的典型用途是?",o:{A:"模型/超參數選擇,避免使用測試集調參",B:"最終報告效能",C:"用來產生標籤",D:"用來做資料增強"}},
+      {id:108,a:"D",q:"K增加時,常見折衷是?",o:{A:"偏差變大、方差變小、計算更快",B:"偏差變小、方差變小、計算更快",C:"偏差不變、方差不變",D:"估計偏差通常下降但計算成本上升(方差也可能上升)"}},
+      {id:109,a:"C",q:"TimeSeriesSplit 的核心動機是?",o:{A:"隨機打散以增加多樣性",B:"最大化類別可分性",C:"保持時間順序避免未來資訊洩漏",D:"讓每折大小相同"}},
+      {id:110,a:"D",q:"為避免洩漏,最推薦的工程做法是?",o:{A:"先全資料 fit scaler 再 CV",B:"只在測試集 fit scaler",C:"不做縮放",D:"用 Pipeline 讓每個 fold 內部 fit/transform"}},
+      {id:111,a:"A",q:"Bias-variance tradeoff 中,高 variance 通常對應?",o:{A:"過擬合(對訓練資料敏感)",B:"欠擬合",C:"一定更準",D:"一定更穩定"}},
+      {id:112,a:"D",q:"過擬合的典型觀察是?",o:{A:"訓練與驗證都差",B:"訓練差、驗證好",C:"訓練與驗證都好",D:"訓練好、驗證差且差距大"}},
+      {id:113,a:"B",q:"若 learning curve 顯示訓練與驗證分數都低且接近,最可能是?",o:{A:"高 variance",B:"高 bias(欠擬合)",C:"模型太複雜",D:"資料洩漏"}},
+      {id:114,a:"D",q:"降低高 variance的策略較符合?",o:{A:"增加模型容量",B:"減少正規化",C:"減少資料",D:"增加正規化、簡化模型或增加訓練資料"}},
+      {id:115,a:"C",q:"Grid search 的本質最貼近?",o:{A:"在參數空間做隨機取樣",B:"只訓練一次",C:"在離散參數網格上做窮舉搜尋(通常搭配CV)",D:"只用測試集評分"}},
+      {id:116,a:"D",q:"超參數調整若使用測試集作評分依據,最可能造成?",o:{A:"更保守的估計",B:"無影響",C:"欠擬合",D:"對測試集過擬合造成偏樂觀"}},
+      {id:117,a:"A",q:"Nested CV 的主要目的最貼近?",o:{A:"同時做超參數選擇(內層)與無偏評估(外層)以減少選模偏差",B:"只用於資料增強",C:"只用於時間序列",D:"加速訓練"}},
+      {id:118,a:"B",q:"Specificity (TNR)意義最貼近?",o:{A:"實際正的找回率",B:"實際負的樣本中有多少被正確判為負",C:"預測正的正確率",D:"整體正確率"}},
+      {id:119,a:"D",q:"ROC曲線中的FPR定義是?",o:{A:"FP/(FP+TP)",B:"FP/(TP+FN)",C:"TN/(TN+FP)",D:"FP/(FP+TN)"}},
+      {id:120,a:"B",q:"AUC的直觀解讀最貼近?",o:{A:"單一 值下最佳 accuracy",B:"模型將隨機正例排在隨機負例之前的機率(排序能力)",C:"模型的平均損失",D:"precision的平均"}},
+      {id:121,a:"C",q:"PR曲線在高度不平衡時常更有參考性,主要原因是?",o:{A:"ROC無法使用",B:"PR 不需要標籤",C:"PR更聚焦正類表現(precision/recall),對少數類更敏感",D:"PR一定比ROC 大"}},
+      {id:122,a:"D",q:"調整決策閾值(threshold)最直接影響?",o:{A:"AUC形狀不變",B:"資料分佈",C:"模型參數",D:"precision/recall的折衷(與混淆矩陣)"}},
+      {id:123,a:"A",q:"概率校準(calibration) 良好表示?",o:{A:"預測0.7的樣本中約70%真為正(在分組意義上)",B:"模型一定準確率高",C:"輸出一定為0或1",D:"AUC 一定是1"}},
+      {id:124,a:"A",q:"Balanced accuracy 最貼近?",o:{A:"(TPR+TNR)/2 或各類別 recall的平均",B:"precision的平均",C:"AUC的近似",D:"F1的近似"}},
+      {id:125,a:"B",q:"在多步驟流程中使用 Pipeline的理論價值之一是?",o:{A:"讓模型必然更準",B:"把前處理與模型封裝,確保訓練與推論轉換一致並避免洩漏",C:"把資料變成稀疏",D:"自動做特徵選擇"}},
+      {id:126,a:"C",q:"若同時做特徵選擇與分類,為避免洩漏,特徵選擇應?",o:{A:"在全資料上先選",B:"只在測試集選",C:"放入 Pipeline 並在每個訓練 fold內fit",D:"不做特徵選擇"}},
+      {id:127,a:"A",q:"調參時的「multiple comparisons」問題與哪個現象相關?",o:{A:"嘗試越多組合,越容易在驗證集上偶然得到高分",B:"嘗試越多組合,越不會過擬合",C:"嘗試越多組合,越能保證泛化",D:"只影響回歸"}},
+      {id:128,a:"B",q:"為降低 selection bias,較嚴謹的策略之一是?",o:{A:"只用測試集調參",B:"使用 nested CV 或保留獨立測試集不參與調參",C:"不做CV",D:"只看訓練分數"}},
+      {id:129,a:"D",q:"若誤報成本很高(FP成本很高,例如垃圾郵件誤判),通常會更重視?",o:{A:"recall",B:"TPR",C:"FPR",D:"precision"}},
+      {id:130,a:"B",q:"在模型評估中,同一資料同時用於訓練與評估最常導致?",o:{A:"更保守估計",B:"過度樂觀的效能估計",C:"無法計算指標",D:"一定欠擬合"}},
+      {id:131,a:"D",q:"在分類中,decision scores 與 calibrated probabilities 的差異最貼近?",o:{A:"兩者一定相同",B:"scores 一定是0~1",C:"probabilities 一定不可排序",D:"scores 用於排序/距離;calibrated probabilities 具機率解釋"}},
+      {id:132,a:"D",q:"為何不應該用測試集反覆挑選超參數?",o:{A:"測試集沒有標籤",B:"測試集太大",C:"測試集只能用於回歸",D:"會對測試集過擬合,導致偏樂觀的估計"}},
+      {id:133,a:"C",q:"交叉驗證(cross-validation)主要用於?",o:{A:"增加訓練資料量",B:"保證100%準確率",C:"更穩健估計泛化表現並輔助超參數選擇",D:"讓模型變成無監督"}},
+      {id:134,a:"A",q:"StratifiedKFold 的主要目的為?",o:{A:"維持每折的類別比例與整體相近",B:"只適用回歸",C:"保證每折特徵均值相同",D:"只適用時間序列"}},
+      {id:135,a:"C",q:"為避免在CV中洩漏,最佳實務是?",o:{A:"先在全資料 fit 前處理",B:"只在測試集 fit 前處理",C:"使用 Pipeline 讓每個 fold 內部 fit/transform",D:"不做前處理"}},
+      {id:136,a:"B",q:"過擬合(overfitting)最常見的特徵是?",o:{A:"訓練與測試都差",B:"訓練表現好但測試/驗證表現差",C:"訓練差但測試好",D:"訓練與測試都好"}},
+      {id:137,a:"A",q:"學習曲線(learning curve)通常用來觀察什麼?",o:{A:"訓練樣本數增加時,訓練/驗證表現如何變化",B:"特徵數增加時的表現",C:"不同核函數的影響",D:"不同資料集的缺失率"}},
+      {id:138,a:"B",q:"若學習曲線顯示訓練分數高、驗證分數低且差距大,最可能是?",o:{A:"欠擬合",B:"過擬合(高 variance)",C:"資料洩漏",D:"類別不平衡"}},
+      {id:139,a:"A",q:"要降低高 variance(過擬合),常見做法是?",o:{A:"增加正規化、簡化模型、增加資料或特徵選擇",B:"增加模型容量",C:"減少資料",D:"降低正規化到0"}},
+      {id:140,a:"B",q:"GridSearchCV的主要作用是?",o:{A:"自動做資料增強",B:"在參數網格上做交叉驗證以選超參數",C:"只做一次訓練",D:"只計算 ROC"}},
+      {id:141,a:"D",q:"若參數空間很大且訓練昂貴,較常用?",o:{A:"GridSearchCV 並全部搜尋",B:"把參數固定",C:"只用測試集調參",D:"RandomizedSearchCV 或貝葉斯最佳化等"}},
+      {id:142,a:"B",q:"在分類問題中,混淆矩陣的TP(True Positive)是?",o:{A:"實際為正且預測為正",B:"實際為負且預測為正",C:"實際為正且預測為負",D:"實際為負且預測為負"}},
+      {id:143,a:"D",q:"Precision 的定義是?",o:{A:"TP/(TP+FN)",B:"(TP+TN)/全部",C:"TN/(TN+FP)",D:"TP/(TP+FP)"}},
+      {id:144,a:"A",q:"Recall (Sensitivity)的定義是?",o:{A:"TP/(TP+FN)",B:"TP/(TP+FP)",C:"TN/(TN+FP)",D:"(TP+TN)/全部"}},
+      {id:145,a:"D",q:"ROC曲線的X軸通常是?",o:{A:"TPR",B:"Precision",C:"Accuracy",D:"FPR"}},
+      {id:146,a:"C",q:"在 sklearn 中查看分類器的 predict_proba,通常取得的是?",o:{A:"logits",B:"類別索引",C:"每類別的機率估計",D:"每類別的梯度"}},
+      {id:147,a:"D",q:"在 sklearn中,scoring='fl'的意義是?",o:{A:"以 accuracy 選模型",B:"以AUC選模型",C:"以 log loss 選模型",D:"以F1作為CV 評分指標"}},
+      {id:148,a:"A",q:"若想避免資料洩漏並整合前處理與模型選擇,最推薦?",o:{A:"Pipeline+ (Grid/Random) SearchCV",B:"先全資料標準化",C:"只用測試集挑參數",D:"先全資料做PCA再CV"}},
+      {id:149,a:"C",q:"若模型選擇中使用了測試集,最可能造成?",o:{A:"欠擬合",B:"分數更保守",C:"對測試集過擬合,估計偏樂觀",D:"分數不變"}},
+      {id:150,a:"D",q:"驗證曲線中,若超參數變大使訓練分數下降但驗證分數上升,常代表?",o:{A:"更過擬合",B:"資料更差",C:"欠擬合更嚴重",D:"正規化變強、泛化改善(減少 overfitting)"}},
+      {id:151,a:"A",q:"在 pandas 中將多次 CV 結果整理成表格,最合理方式之一是?",o:{A:"用 pd.DataFrame(results_dict)以欄位存 mean/std scores",B:"只能用Excel 手工輸入",C:"用 pd.read_csv 讀字典",D:"用df.plot_decision_regions"}}, // 註: 選項 D 在原始語境可能有誤，但依據原始資料填入
+      {id:152,a:"C",q:"若使用 PyTorch 訓練模型,也需要類似的「驗證」流程,最合理的做法是?",o:{A:"每次都在測試集上挑模型",B:"在訓練迴圈中另跑 validation 並用 no_grad/eval 模式",C:"不需要驗證集",D:"只看訓練 loss"}},
+      {id:153,a:"A",q:"在類別不平衡下,調整 class_weight的目的最貼近?",o:{A:"提高少數類錯誤的代價,使模型更重視少數類",B:"讓資料變平衡(改變樣本數)",C:"讓模型變線性",D:"讓AUC 變成1"}},
+      {id:154,a:"A",q:"集成提升效能常見的理論前提之一是?",o:{A:"基學習器錯誤不完全相關(具多樣性)",B:"所有基學習器完全相同",C:"基學習器全都欠擬合",D:"基學習器都必須是線性"}},
+      {id:155,a:"D",q:"若基學習器錯誤高度相關,集成效果通常?",o:{A:"大幅提升",B:"不受影響",C:"一定更差",D:"提升有限(難以互補抵銷)"}},
+      {id:156,a:"D",q:"Bootstrap sample的典型特徵是?",o:{A:"無放回抽樣",B:"一定包含所有樣本一次",C:"樣本永不重複",D:"有放回抽樣,可能重複且遺漏部分原始樣本"}},
+      {id:157,a:"B",q:"OOB (out-of-bag)估計的核心概念是?",o:{A:"用測試集估計",B:"用每棵樹未看過的樣本當作內建驗證來估計泛化",C:"用訓練集估計",D:"用交叉驗證替代"}},
+      {id:158,a:"A",q:"OOB估計的優點最貼近?",o:{A:"不需額外驗證集即可近似泛化評估",B:"一定等於測試集分數",C:"只能用於回歸",D:"只能用於線性模型"}},
+      {id:159,a:"D",q:"隨機森林相較 bagging 決策樹,多了哪個關鍵設計以增加多樣性?",o:{A:"更深的樹",B:"更大的資料集",C:"更大的學習率",D:"每次分裂只考慮隨機子集合的特徵"}},
+      {id:160,a:"C",q:"Permutation importance 的核心思想是?",o:{A:"把資料重抽樣",B:"把模型重訓練",C:"隨機打亂某特徵並觀察分數下降,估計其重要性",D:"只看樹深度"}},
+      {id:161,a:"B",q:"Boosting 與 Bagging 的主要差異之一是?",o:{A:"Boosting 必定並行",B:"Boosting 通常序列化,後續模型更關注前一輪錯誤",C:"Bagging 需要標籤,Boosting 不需要",D:"兩者都不使用弱學習器"}},
+      {id:162,a:"C",q:"Gradient Boosting 的核心思想最貼近?",o:{A:"投票",B:"bagging",C:"逐步擬合損失函數的負梯度(殘差)來改進模型",D:"最大化協方差"}},
+      {id:163,a:"D",q:"在 boosting中,learning_rate 降低且n_estimators 提高的常見效果是?",o:{A:"更快訓練且更差",B:"更少樹但更好",C:"不影響",D:"更細緻的加法擬合,常提高泛化但訓練更慢"}},
+      {id:164,a:"A",q:"在分類任務中,boosting 的輸出常可視為?",o:{A:"加法模型的分數(logit/score),再經 sigmoid/softmax 轉成機率",B:"必定是硬標籤",C:"必定是 one-hot",D:"必定是距離均值"}},
+      {id:165,a:"B",q:"在偏差/方差觀點下,boosting 常被視為主要在?",o:{A:"降低 variance",B:"降低 bias(也可能影響variance)",C:"只降低噪聲",D:"只降低特徵數"}},
+      {id:166,a:"D",q:"Stacking 中避免資料洩漏的關鍵做法是?",o:{A:"用測試集訓練 meta-model",B:"不用交叉驗證",C:"只用一個基模型",D:"使用 out-of-fold 預測作為 meta-model 的訓練特徵"}},
+      {id:167,a:"B",q:"投票集成中「加權投票」的核心動機是?",o:{A:"讓所有模型權重一樣",B:"根據模型可信度/表現給不同權重",C:"避免需要機率",D:"保證不會過擬合"}},
+      {id:168,a:"A",q:"Soft voting 較適用的前提是?",o:{A:"基模型能輸出可比較的機率(且最好已校準)",B:"基模型只能輸出 hard label",C:"只適用回歸",D:"只適用樹模型"}},
+      {id:169,a:"C",q:"「多樣性(diversity)」在集成理論上的角色最貼近?",o:{A:"讓單模型更複雜",B:"讓資料更少",C:"讓錯誤互補以降低整體錯誤",D:"讓bias 一定變0"}},
+      {id:170,a:"B",q:"在 bagging 中,若基學習器非常穩定(低方差,如線性回歸),bagging 的提升通常?",o:{A:"非常巨大",B:"較有限",C:"一定更差",D:"一定更好"}},
+      {id:171,a:"A",q:"Breiman 的隨機森林」常被視為在樹集成中同時採用?",o:{A:"bagging+特徵隨機子抽樣",B:"boosting+特徵縮放",C:"stacking + PCA",D:"SVM + kernel trick"}},
+      {id:172,a:"C",q:"為何 boosting 中常說「樹數越多不一定越好」?",o:{A:"因為樹數越多bias 越高",B:"因為樹數越多一定欠擬合",C:"樹數越多可能逐步擬合噪聲而過擬合(需shrinkage/早停)",D:"因為樹數越多variance 一定為0"}},
+      {id:173,a:"D",q:"在集成中若基模型彼此極強但高度相似,最可能發生?",o:{A:"泛化大幅提升",B:"bias 變大",C:"variance 變0",D:"集成收益有限(多樣性不足)"}},
+      {id:174,a:"C",q:"在boosting 的加法模型中,最終模型形式最貼近?",o:{A:"乘法組合",B:"取最大",C:"逐步相加的加權和(stage-wise additive model)",D:"取最小"}},
+      {id:175,a:"A",q:"為何集成常能改善「穩定性」?",o:{A:"平均/投票降低對單一訓練樣本擾動的敏感度",B:"因為不用訓練",C:"因為資料變少",D:"因為不需要前處理"}},
+      {id:176,a:"B",q:"集成學習(ensemble learning)最核心的想法是?",o:{A:"用單一模型達到最佳",B:"把多個弱/不同模型的預測結合以提升泛化",C:"只用深度學習",D:"只用更多資料"}},
+      {id:177,a:"A",q:"在分類的「多數決(majority vote)」集成中,最常見的最終輸出是?",o:{A:"得票最多的類別",B:"平均機率最小的類別",C:"loss 最小的類別",D:"隨機抽樣的類別"}},
+      {id:178,a:"C",q:"集成效益通常在什麼情況更明顯?",o:{A:"基學習器錯誤高度相關",B:"所有基學習器都一樣",C:"基學習器彼此多樣化且錯誤不完全相關",D:"基學習器都欠擬合"}},
+      {id:179,a:"C",q:"在決策樹集成中,特徵重要度(feature importance)常以什麼概念衡量?",o:{A:"特徵均值",B:"特徵標準差",C:"不純度下降(Gini/entropy)或分裂帶來的 impurity reduction",D:"特徵缺失率"}},
+      {id:180,a:"A",q:"若想用 pandas 排序顯示特徵重要度,最合理做法是?",o:{A:"pd.Series(importances, index=feat_names).sort_values(ascending False)",B:"pd.DataFrame(importances).sort_index()",C:"pd.read_csv(importances)",D:"pd.Series(feat_names).sort_values()"}},
+      {id:181,a:"D",q:"在分類中,Gini impurity 越小通常代表?",o:{A:"越不純(越混雜)",B:"越隨機",C:"越不重要",D:"節點越純(類別越集中)"}},
+      {id:182,a:"A",q:"AdaBoost 的典型做法是?",o:{A:"提高錯分樣本的權重,讓後續弱學習器更關注它們",B:"隨機刪除樣本",C:"只在特徵上做bootstrap",D:"只用深度樹"}},
+      {id:183,a:"A",q:"為何 boosting 常使用淺樹(stumps 或小深度)作為弱學習器?",o:{A:"降低單模型複雜度,讓逐步加法模型可穩定改進",B:"因為深樹不能訓練",C:"因為必須用CNN",D:"因為淺樹不能 overfit"}},
+      {id:184,a:"D",q:"learning_rate 在 Gradient Boosting 中的直觀意義是?",o:{A:"樹的數量",B:"最大深度",C:"特徵數",D:"每一步新增弱學習器對整體模型的貢獻縮放(shrinkage)"}},
+      {id:185,a:"C",q:"在 sklearn 的GradientBoostingClassifier中,n_estimators代表?",o:{A:"特徵數",B:"最大深度",C:"弱學習器(樹)的數量",D:"樣本數"}},
+      {id:186,a:"A",q:"在隨機森林中,增加樹數(n_estimators)通常會?",o:{A:"降低方差並使表現趨於穩定(但計算增加)",B:"一定降低 bias",C:"一定造成過擬合",D:"一定降低訓練時間"}},
+      {id:187,a:"D",q:"在隨機森林中,單棵樹越深通常?",o:{A:"bias 越高",B:"variance 越低",C:"模型更線性",D:"bias 下降但 variance 可能上升(更易過擬合)"}},
+      {id:188,a:"B",q:"Bagging 對於噪聲/離群值的典型影響是?",o:{A:"一定更敏感",B:"可降低對單一樣本的敏感度(平均化)",C:"一定更差",D:"完全不受影響"}},
+      {id:189,a:"C",q:"Boosting 對雜訊標籤(label noise)較敏感的常見原因是?",o:{A:"它不使用 loss",B:"它不使用樹",C:"它會逐步加重難例,可能也加重雜訊點",D:"它只用 OOB"}},
+      {id:190,a:"A",q:"Stacking (stacked generalization)最貼近?",o:{A:"用投票合併",B:"用平均合併",C:"用另一個 meta-model 學習如何結合基模型輸出",D:"用 bootstrap 合併"}},
+      {id:191,a:"B",q:"在 sklearn VotingClassifier(voting='soft')的前提通常是?",o:{A:"基模型必須輸出 decision_function",B:"基模型需支援 predict_proba",C:"基模型必須是樹",D:"基模型必須相同"}},
+      {id:192,a:"A",q:"對於回歸的集成,最常見的結合方式是?",o:{A:"平均(或加權平均)預測值",B:"投票類別",C:"取最大值",D:"取最小值"}},
+      {id:193,a:"C",q:"為何「基模型多樣性」是集成成功的關鍵之一?",o:{A:"因為會增加資料量",B:"因為會降低 bias 一定到0",C:"因為錯誤不完全相關,集成可互補抵銷",D:"因為會讓模型變線性"}},
+      {id:194,a:"B",q:"在不平衡分類中,使用集成仍需注意?",o:{A:"集成一定自動平衡",B:"評估指標與閾值選擇(如 PR/F1),以及class_weight/重抽樣",C:"集成只能用 accuracy",D:"集成不能用於不平衡"}},
+      {id:195,a:"C",q:"在隨機森林中,若max_features 太小,可能造成?",o:{A:"樹完全相同",B:"完全無法訓練",C:"每棵樹更不同但單樹更弱,可能需更多樹",D:"一定更準"}},
+      {id:196,a:"B",q:"在 Gradient Boosting 中,subsample<1.0 (stochastic gradient boosting)的直觀效果是?",o:{A:"移除所有特徵",B:"對樣本做隨機子抽樣以降低方差、增加隨機性",C:"只對測試集抽樣",D:"只對標籤抽樣"}},
+      {id:197,a:"A",q:"若用 pandas 建立包含'feature'與'importance' 欄位的DataFrame 並排序,最合理流程是?",o:{A:"df.sort_values('importance', ascending False)",B:"df.sort_index()",C:"df.dropna()",D:"df.reset_index()"}},
+      {id:198,a:"B",q:"在集成中「多樣性」可由哪些方式提高?",o:{A:"讓所有模型用同資料同特徵",B:"只用更深的樹",C:"資料重抽樣、特徵子抽樣、不同模型/超參數",D:"只用更大的learning rate"}},
+      {id:199,a:"D",q:"在 sklearn中,Random ForestClassifier 的random_state 主要用於?",o:{A:"控制 loss",B:"控制資料標準化",C:"控制類別數",D:"控制隨機性以便可重現(bootstrap/特徵抽樣等)"}},
+      {id:200,a:"B",q:"在AdaBoost中,弱學習器的權重(alpha)通常與什麼相關?",o:{A:"它的均值",B:"它的錯誤率(error rate)",C:"它的特徵數",D:"它的batch_size"}}
+    ];
+
+    // --- 2. APP STATE ---
+    let currentQuestions = [];
+    let userAnswers = {};
+    let timerInterval;
+    let timeElapsed = 0;
+
+    // --- 3. STORAGE UTILS ---
+    function getHistory() {
+        try { return JSON.parse(localStorage.getItem('ml_quiz_history') || '[]'); } 
+        catch { return []; }
+    }
+    function saveHistory(record) {
+        const history = getHistory();
+        history.push(record);
+        localStorage.setItem('ml_quiz_history', JSON.stringify(history));
+    }
+    function getWrongHistory() {
+        try { return JSON.parse(localStorage.getItem('ml_quiz_wrong_qs') || '{}'); } 
+        catch { return {}; }
+    }
+    function saveWrongHistory(wrongIds) {
+        const wrongStore = getWrongHistory();
+        wrongIds.forEach(id => { wrongStore[id] = (wrongStore[id] || 0) + 1; });
+        localStorage.setItem('ml_quiz_wrong_qs', JSON.stringify(wrongStore));
+    }
+
+    // --- 4. GLOBAL FUNCTIONS (Attached to window) ---
+    window.showView = function(viewId) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active-view'));
+        document.getElementById(viewId).classList.add('active-view');
+    }
+
+    window.startQuiz = function() {
+        // Shuffle & Pick 20
+        const shuffled = [...questionPool].sort(() => 0.5 - Math.random());
+        currentQuestions = shuffled.slice(0, 20);
+        userAnswers = {};
+        renderQuiz();
+        startTimer();
+        window.showView('view-quiz');
+    }
+
+    window.submitQuiz = function() {
+        clearInterval(timerInterval);
+        let correctCount = 0;
+        let wrongIds = [];
+        
+        currentQuestions.forEach(q => {
+            if (userAnswers[q.id] === q.a) correctCount++;
+            else wrongIds.push(q.id);
+        });
+
+        const score = correctCount * 5; 
+        const accuracy = (correctCount / 20 * 100).toFixed(0);
+
+        saveHistory({
+            date: new Date().toISOString(),
+            score: score,
+            correctCount: correctCount,
+            timeSeconds: timeElapsed
+        });
+        saveWrongHistory(wrongIds);
+
+        document.getElementById('result-score').innerText = score;
+        document.getElementById('result-accuracy').innerText = accuracy + '%';
+        
+        const m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+        const s = (timeElapsed % 60).toString().padStart(2, '0');
+        document.getElementById('result-time').innerText = `${m}:${s}`;
+
+        renderReview(wrongIds);
+        window.showView('view-result');
+    }
+
+    window.showDashboard = function() {
+        initDashboard();
+        window.showView('view-dashboard');
+    }
+
+    window.clearData = function() {
+        if(confirm('確定要清除所有歷史紀錄嗎？')) {
+            localStorage.removeItem('ml_quiz_history');
+            localStorage.removeItem('ml_quiz_wrong_qs');
+            initDashboard();
+        }
+    }
+
+    // --- 5. RENDER HELPERS ---
+    function renderQuiz() {
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = '';
+        currentQuestions.forEach((q, idx) => {
+            const block = document.createElement('div');
+            block.className = 'question-block';
+            block.innerHTML = `
+                <div style="font-weight:bold; margin-bottom:10px;">${idx + 1}. ${q.q}</div>
+                <div class="options-grid">
+                    ${['A','B','C','D'].map(opt => `
+                        <div>
+                            <input type="radio" name="q-${q.id}" id="q-${q.id}-${opt}" value="${opt}" onchange="recordAnswer(${q.id}, '${opt}')">
+                            <label class="option-label" for="q-${q.id}-${opt}"><strong>(${opt})</strong> ${q.o[opt] || ''}</label>
+                        </div>
+                    `).join('')}
+                </div>`;
+            container.appendChild(block);
+        });
+    }
+
+    window.recordAnswer = function(qId, val) {
+        userAnswers[qId] = val;
+    }
+
+    function startTimer() {
+        timeElapsed = 0;
+        clearInterval(timerInterval);
+        const timerEl = document.getElementById('timer');
+        timerInterval = setInterval(() => {
+            timeElapsed++;
+            const m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+            const s = (timeElapsed % 60).toString().padStart(2, '0');
+            timerEl.innerText = `${m}:${s}`;
+        }, 1000);
+    }
+
+    function renderReview(wrongIds) {
+        const container = document.getElementById('review-container');
+        container.innerHTML = '';
+        if (wrongIds.length === 0) {
+            container.innerHTML = '<p style="color:var(--success); font-weight:bold;">本次全對！</p>';
+            return;
+        }
+        wrongIds.forEach(id => {
+            const q = currentQuestions.find(item => item.id === id);
+            const userAns = userAnswers[id] || '未作答';
+            const div = document.createElement('div');
+            div.className = 'review-item';
+            div.innerHTML = `
+                <div><strong>題目:</strong> ${q.q}</div>
+                <div style="margin-top:5px;">
+                    <span class="wrong-ans">您的答案: ${userAns}</span> | 
+                    <span class="correct-ans">正確答案: ${q.a}</span>
+                </div>
+                <div style="margin-top:5px; font-size:0.9em; color:#666;">${q.o[q.a]}</div>`;
+            container.appendChild(div);
+        });
+    }
+
+    function initDashboard() {
+        document.getElementById('total-pool-size').innerText = questionPool.length;
+        const history = getHistory();
+        const wrongStore = getWrongHistory();
+
+        if (history.length > 0) {
+            const totalScore = history.reduce((acc, cur) => acc + cur.score, 0);
+            const accuracy = ((history.reduce((acc, cur) => acc + cur.correctCount, 0) / (history.length * 20)) * 100).toFixed(1);
+            document.getElementById('avg-score').innerText = (totalScore / history.length).toFixed(1);
+            document.getElementById('total-accuracy').innerText = accuracy + '%';
+        } else {
+            document.getElementById('avg-score').innerText = '--';
+            document.getElementById('total-accuracy').innerText = '--%';
+        }
+        document.getElementById('total-wrong-count').innerText = Object.keys(wrongStore).length;
+
+        renderChart(history);
+        renderWrongList(wrongStore);
+    }
+
+    function renderChart(history) {
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        if (window.myChart) window.myChart.destroy();
+        window.myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: history.map((_, i) => `測驗 ${i+1}`),
+                datasets: [{
+                    label: '得分',
+                    data: history.map(h => h.score),
+                    borderColor: '#2563eb',
+                    tension: 0.1
+                }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+        });
+    }
+
+    function renderWrongList(wrongStore) {
+        const listEl = document.getElementById('wrong-history-list');
+        listEl.innerHTML = '';
+        const sortedIds = Object.keys(wrongStore).sort((a,b) => wrongStore[b] - wrongStore[a]);
+        
+        if (sortedIds.length === 0) {
+            listEl.innerHTML = '<p style="color:#64748b">目前沒有錯題紀錄。</p>';
+            return;
+        }
+
+        sortedIds.slice(0, 50).forEach(id => {
+            const q = questionPool.find(item => item.id == id);
+            if (!q) return; // 防呆
+            
+            const div = document.createElement('div');
+            div.className = 'review-item';
+            
+            // 修改處：在正確答案後方加入 ${q.o[q.a]} 來顯示選項內容
+            div.innerHTML = `
+                <div><strong>[題號 ${q.id}]</strong> (錯誤次數: ${wrongStore[id]})</div>
+                <div style="margin:5px 0;">${q.q}</div>
+                <div class="correct-ans">正確答案: ${q.a} (${q.o[q.a]})</div>
+            `;
+            listEl.appendChild(div);
+        });
+    }
+
+    // Init on Load
+    initDashboard();
+</script>
+</body>
+</html>
