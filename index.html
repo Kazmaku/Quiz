@@ -3,39 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>機器學習題庫測驗系統(Final)</title>
+    <title>機器學習題庫測驗系統</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
+            /* 共用色系 */
             --primary: #2563eb;
             --secondary: #64748b;
             --success: #22c55e;
             --danger: #ef4444;
+
+            /* 預設淺色模式 (Light Mode) */
             --bg: #f8fafc;
             --card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --stat-bg: #f1f5f9;
+            --review-bg: #fef2f2;
+            --option-hover: #eff6ff;
+            --option-checked: #eff6ff;
+            --chart-grid: #e2e8f0;
+            --chart-text: #64748b;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: #1e293b; margin: 0; padding: 20px; line-height: 1.6; }
+
+        /* 自動偵測深色模式 (Dark Mode) */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;       /* Slate 900 */
+                --card: #1e293b;     /* Slate 800 */
+                --text-main: #f1f5f9;/* Slate 100 */
+                --text-muted: #94a3b8; /* Slate 400 */
+                --border: #334155;   /* Slate 700 */
+                --stat-bg: #334155;  /* Slate 700 */
+                --review-bg: #450a0a;/* Red 950 (更深一點的紅背景) */
+                --option-hover: #1e3a8a; /* Blue 900 */
+                --option-checked: #172554; /* Blue 950 */
+                --chart-grid: #334155;
+                --chart-text: #cbd5e1;
+            }
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px; 
+            line-height: 1.6; 
+            transition: background-color 0.3s, color 0.3s;
+        }
         .container { max-width: 800px; margin: 0 auto; }
-        .card { background: var(--card); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 24px; margin-bottom: 20px; }
-        h1, h2, h3 { margin-top: 0; }
+        .card { 
+            background: var(--card); 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+            padding: 24px; 
+            margin-bottom: 20px; 
+            transition: background-color 0.3s;
+        }
+        h1, h2, h3 { margin-top: 0; color: var(--text-main); }
         .btn { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; transition: opacity 0.2s; }
         .btn:hover { opacity: 0.9; }
         .btn-danger { background-color: var(--danger); }
         .timer { font-size: 1.5rem; font-weight: bold; color: var(--danger); text-align: right; margin-bottom: 10px; }
-        .question-block { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        
+        .question-block { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
         .options-grid { display: grid; gap: 10px; margin-top: 10px; }
-        .option-label { display: block; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-        .option-label:hover { border-color: var(--primary); background: #eff6ff; }
-        input[type="radio"]:checked + .option-label { border-color: var(--primary); background-color: #eff6ff; font-weight: bold; }
+        .option-label { 
+            display: block; 
+            padding: 10px; 
+            border: 2px solid var(--border); 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            color: var(--text-main);
+        }
+        .option-label:hover { border-color: var(--primary); background: var(--option-hover); }
+        input[type="radio"]:checked + .option-label { border-color: var(--primary); background-color: var(--option-checked); font-weight: bold; }
         input[type="radio"] { display: none; }
+        
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; text-align: center; }
-        .stat-box { background: #f1f5f9; padding: 15px; border-radius: 8px; }
+        .stat-box { background: var(--stat-bg); padding: 15px; border-radius: 8px; transition: background-color 0.3s; }
         .stat-val { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
-        .review-item { border-left: 4px solid var(--danger); padding-left: 15px; margin-bottom: 20px; background: #fef2f2; padding: 15px; border-radius: 0 8px 8px 0; }
+        
+        .review-item { 
+            border-left: 4px solid var(--danger); 
+            padding-left: 15px; 
+            margin-bottom: 20px; 
+            background: var(--review-bg); 
+            padding: 15px; 
+            border-radius: 0 8px 8px 0; 
+            transition: background-color 0.3s;
+        }
         .correct-ans { color: var(--success); font-weight: bold; }
         .wrong-ans { color: var(--danger); text-decoration: line-through; }
+        
         .view { display: none; }
         .active-view { display: block; }
+        .progress-bar { width: 100%; height: 10px; background-color: var(--border); border-radius: 5px; margin-top: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: var(--success); width: 0%; transition: width 0.3s; }
     </style>
 </head>
 <body>
@@ -43,14 +110,22 @@
 <div class="container">
     <div id="view-dashboard" class="view active-view">
         <div class="card">
-            <h1>機器學習題庫測驗(Final)</h1>
-            <p>資料庫共收錄 <span id="total-pool-size">0</span> 題。每次隨機測驗 20 題。</p>
+            <h1>機器學習題庫測驗</h1>
+            <p>資料庫共收錄 <span id="total-pool-size">0</span> 題。</p>
+            <div style="margin-bottom: 20px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:var(--text-muted);">
+                    <span>題庫覆蓋率 (完成一輪自動重置)</span>
+                    <span id="coverage-text">0%</span>
+                </div>
+                <div class="progress-bar"><div id="coverage-bar" class="progress-fill"></div></div>
+            </div>
+
             <div class="stat-grid">
                 <div class="stat-box"><div>歷史平均分</div><div class="stat-val" id="avg-score">--</div></div>
                 <div class="stat-box"><div>總正確率</div><div class="stat-val" id="total-accuracy">--%</div></div>
                 <div class="stat-box"><div>累積錯題數</div><div class="stat-val" id="total-wrong-count">0</div></div>
             </div>
-            <button class="btn" onclick="window.startQuiz()">開始測驗 (20題)</button>
+            <button class="btn" onclick="window.startQuiz()">開始測驗(20題)</button>
             <button class="btn btn-danger" onclick="window.clearData()" style="float: right;">清除紀錄</button>
         </div>
         <div class="card">
@@ -92,9 +167,9 @@
 </div>
 
 <script>
-    // --- 1. PRE-COMPILED DATA (Fixed: No Parsing Risk) ---
-    // 已將所有 200 題預處理為 JSON，確保格式絕對正確
-    const questionPool = 
+    // --- 1. DATA POOL ---
+    // 請務必保留這裡的 questionPool 完整資料
+ const questionPool = 
      [
   {
     "id": 1,
@@ -3596,6 +3671,7 @@
   }
 ];
 
+
     // --- 2. APP STATE ---
     let currentQuestions = [];
     let userAnswers = {};
@@ -3603,60 +3679,122 @@
     let timeElapsed = 0;
 
     // --- 3. STORAGE UTILS ---
-    function getHistory() {
-        try { return JSON.parse(localStorage.getItem('ml_quiz_history') || '[]'); } 
-        catch { return []; }
-    }
-    function saveHistory(record) {
-        const history = getHistory();
-        history.push(record);
-        localStorage.setItem('ml_quiz_history', JSON.stringify(history));
-    }
-    function getWrongHistory() {
-        try { return JSON.parse(localStorage.getItem('ml_quiz_wrong_qs') || '{}'); } 
-        catch { return {}; }
-    }
+    function getHistory() { try { return JSON.parse(localStorage.getItem('ml_quiz_history') || '[]'); } catch { return []; } }
+    function saveHistory(record) { const history = getHistory(); history.push(record); localStorage.setItem('ml_quiz_history', JSON.stringify(history)); }
+    function getWrongHistory() { try { return JSON.parse(localStorage.getItem('ml_quiz_wrong_qs') || '{}'); } catch { return {}; } }
     function saveWrongHistory(wrongIds) {
         const wrongStore = getWrongHistory();
         wrongIds.forEach(id => { wrongStore[id] = (wrongStore[id] || 0) + 1; });
         localStorage.setItem('ml_quiz_wrong_qs', JSON.stringify(wrongStore));
     }
+    function getWeights() { try { return JSON.parse(localStorage.getItem('ml_quiz_weights') || '{}'); } catch { return {}; } }
+    function saveWeights(weights) { localStorage.setItem('ml_quiz_weights', JSON.stringify(weights)); }
+    function getSeenIds() { try { return JSON.parse(localStorage.getItem('ml_quiz_seen_ids') || '[]'); } catch { return []; } }
+    function saveSeenIds(ids) { localStorage.setItem('ml_quiz_seen_ids', JSON.stringify(ids)); }
 
-    // --- 4. GLOBAL FUNCTIONS (Attached to window) ---
+    // --- 4. CORE LOGIC (Weighted & Spaced Repetition) ---
+    const DEFAULT_WEIGHT = 10;
+    const WEIGHT_INC_WRONG = 10;
+    const WEIGHT_DEC_CORRECT = 2;
+    const MIN_WEIGHT = 1;
+
     window.showView = function(viewId) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active-view'));
         document.getElementById(viewId).classList.add('active-view');
     }
 
     window.startQuiz = function() {
-        // Shuffle & Pick 20
-        const shuffled = [...questionPool].sort(() => 0.5 - Math.random());
-        currentQuestions = shuffled.slice(0, 20);
+        const pool = (typeof questionPool !== 'undefined') ? questionPool : [];
+        if(pool.length === 0) { alert("讀取不到題庫資料。"); return; }
+
+        let seenIds = getSeenIds();
+        if (seenIds.length >= pool.length) {
+            alert("恭喜！你已經完成了一輪所有題目。系統將重置進度，開啟新的一輪刷題！");
+            seenIds = [];
+            saveSeenIds([]);
+        }
+
+        const weights = getWeights();
+        const unseenPool = pool.filter(q => !seenIds.includes(q.id));
+        const seenPool = pool.filter(q => seenIds.includes(q.id));
+
+        const TOTAL_Q = 20;
+        const TARGET_UNSEEN = 14; 
+        let selectedQuestions = [];
+
+        // Step A: Pick Unseen
+        const shuffledUnseen = [...unseenPool].sort(() => 0.5 - Math.random());
+        const takeUnseenCount = Math.min(TARGET_UNSEEN, shuffledUnseen.length);
+        selectedQuestions = selectedQuestions.concat(shuffledUnseen.slice(0, takeUnseenCount));
+
+        // Step B: Pick Seen (Weighted)
+        const slotsRemaining = TOTAL_Q - selectedQuestions.length;
+        if (slotsRemaining > 0) {
+            if (seenPool.length > 0) {
+                selectedQuestions = selectedQuestions.concat(pickWeightedQuestions(seenPool, weights, slotsRemaining));
+            } else {
+                // Not enough seen, take more unseen if avail
+                selectedQuestions = selectedQuestions.concat(shuffledUnseen.slice(takeUnseenCount, takeUnseenCount + slotsRemaining));
+            }
+        }
+
+        currentQuestions = selectedQuestions.sort(() => 0.5 - Math.random());
         userAnswers = {};
         renderQuiz();
         startTimer();
         window.showView('view-quiz');
     }
 
+    function pickWeightedQuestions(pool, weightMap, count) {
+        let candidates = [...pool];
+        let selected = [];
+        for (let i = 0; i < count; i++) {
+            if (candidates.length === 0) break;
+            let totalWeight = 0;
+            candidates.forEach(q => totalWeight += (weightMap[q.id] || DEFAULT_WEIGHT));
+            let randomVal = Math.random() * totalWeight;
+            let currentSum = 0;
+            for (let j = 0; j < candidates.length; j++) {
+                const w = weightMap[candidates[j].id] || DEFAULT_WEIGHT;
+                currentSum += w;
+                if (currentSum >= randomVal) {
+                    selected.push(candidates[j]);
+                    candidates.splice(j, 1);
+                    break;
+                }
+            }
+        }
+        return selected;
+    }
+
     window.submitQuiz = function() {
         clearInterval(timerInterval);
         let correctCount = 0;
         let wrongIds = [];
+        let seenIds = getSeenIds();
+        let weights = getWeights();
         
+        const currentIds = currentQuestions.map(q => q.id);
+        seenIds = [...new Set([...seenIds, ...currentIds])];
+        saveSeenIds(seenIds);
+
         currentQuestions.forEach(q => {
-            if (userAnswers[q.id] === q.a) correctCount++;
-            else wrongIds.push(q.id);
+            const isCorrect = (userAnswers[q.id] === q.a);
+            const currentW = weights[q.id] || DEFAULT_WEIGHT;
+            if (isCorrect) {
+                correctCount++;
+                weights[q.id] = Math.max(MIN_WEIGHT, currentW - WEIGHT_DEC_CORRECT);
+            } else {
+                wrongIds.push(q.id);
+                weights[q.id] = currentW + WEIGHT_INC_WRONG;
+            }
         });
 
+        saveWeights(weights);
         const score = correctCount * 5; 
-        const accuracy = (correctCount / 20 * 100).toFixed(0);
+        const accuracy = (currentQuestions.length > 0) ? (correctCount / currentQuestions.length * 100).toFixed(0) : 0;
 
-        saveHistory({
-            date: new Date().toISOString(),
-            score: score,
-            correctCount: correctCount,
-            timeSeconds: timeElapsed
-        });
+        saveHistory({ date: new Date().toISOString(), score: score, correctCount: correctCount, timeSeconds: timeElapsed });
         saveWrongHistory(wrongIds);
 
         document.getElementById('result-score').innerText = score;
@@ -3670,15 +3808,13 @@
         window.showView('view-result');
     }
 
-    window.showDashboard = function() {
-        initDashboard();
-        window.showView('view-dashboard');
-    }
-
+    window.showDashboard = function() { initDashboard(); window.showView('view-dashboard'); }
     window.clearData = function() {
-        if(confirm('確定要清除所有歷史紀錄嗎？')) {
+        if(confirm('確定要清除所有紀錄與權重嗎？')) {
             localStorage.removeItem('ml_quiz_history');
             localStorage.removeItem('ml_quiz_wrong_qs');
+            localStorage.removeItem('ml_quiz_weights');
+            localStorage.removeItem('ml_quiz_seen_ids');
             initDashboard();
         }
     }
@@ -3704,9 +3840,7 @@
         });
     }
 
-    window.recordAnswer = function(qId, val) {
-        userAnswers[qId] = val;
-    }
+    window.recordAnswer = function(qId, val) { userAnswers[qId] = val; }
 
     function startTimer() {
         timeElapsed = 0;
@@ -3738,15 +3872,22 @@
                     <span class="wrong-ans">您的答案: ${userAns}</span> | 
                     <span class="correct-ans">正確答案: ${q.a}</span>
                 </div>
-                <div style="margin-top:5px; font-size:0.9em; color:#666;">${q.o[q.a]}</div>`;
+                <div style="margin-top:5px; font-size:0.9em; color:var(--text-muted);">${q.o[q.a]}</div>`;
             container.appendChild(div);
         });
     }
 
     function initDashboard() {
-        document.getElementById('total-pool-size').innerText = questionPool.length;
+        const poolLen = (typeof questionPool !== 'undefined') ? questionPool.length : 0;
+        document.getElementById('total-pool-size').innerText = poolLen;
+        
         const history = getHistory();
         const wrongStore = getWrongHistory();
+        const seenIds = getSeenIds();
+
+        const coveragePct = poolLen > 0 ? ((seenIds.length / poolLen) * 100).toFixed(1) : 0;
+        document.getElementById('coverage-bar').style.width = `${coveragePct}%`;
+        document.getElementById('coverage-text').innerText = `${seenIds.length} / ${poolLen} (${coveragePct}%)`;
 
         if (history.length > 0) {
             const totalScore = history.reduce((acc, cur) => acc + cur.score, 0);
@@ -3766,18 +3907,43 @@
     function renderChart(history) {
         const ctx = document.getElementById('scoreChart').getContext('2d');
         if (window.myChart) window.myChart.destroy();
+        const recentHistory = history.slice(-20);
+        
+        // [新增] 偵測目前是否為深色模式，以調整圖表文字顏色
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const textColor = isDarkMode ? '#cbd5e1' : '#64748b'; // Slate 300 vs Slate 500
+        const gridColor = isDarkMode ? '#334155' : '#e2e8f0'; // Slate 700 vs Slate 200
+
         window.myChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: history.map((_, i) => `測驗 ${i+1}`),
+                labels: recentHistory.map((_, i) => `測驗 ${history.length - recentHistory.length + i + 1}`),
                 datasets: [{
                     label: '得分',
-                    data: history.map(h => h.score),
+                    data: recentHistory.map(h => h.score),
                     borderColor: '#2563eb',
-                    tension: 0.1
+                    tension: 0.1,
+                    pointBackgroundColor: '#2563eb'
                 }]
             },
-            options: { responsive: true, scales: { y: { beginAtZero: true, max: 100 } } }
+            options: { 
+                responsive: true,
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        max: 100,
+                        ticks: { color: textColor },
+                        grid: { color: gridColor }
+                    },
+                    x: {
+                        ticks: { color: textColor },
+                        grid: { color: gridColor }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: textColor } }
+                }
+            }
         });
     }
 
@@ -3787,18 +3953,18 @@
         const sortedIds = Object.keys(wrongStore).sort((a,b) => wrongStore[b] - wrongStore[a]);
         
         if (sortedIds.length === 0) {
-            listEl.innerHTML = '<p style="color:#64748b">目前沒有錯題紀錄。</p>';
+            listEl.innerHTML = '<p style="color:var(--text-muted)">目前沒有錯題紀錄。</p>';
             return;
         }
 
+        if(typeof questionPool === 'undefined') return;
+
         sortedIds.slice(0, 50).forEach(id => {
             const q = questionPool.find(item => item.id == id);
-            if (!q) return; // 防呆
+            if (!q) return; 
             
             const div = document.createElement('div');
             div.className = 'review-item';
-            
-            // 修改處：在正確答案後方加入 ${q.o[q.a]} 來顯示選項內容
             div.innerHTML = `
                 <div><strong>[題號 ${q.id}]</strong> (錯誤次數: ${wrongStore[id]})</div>
                 <div style="margin:5px 0;">${q.q}</div>
@@ -3808,10 +3974,7 @@
         });
     }
 
-    // Init on Load
     initDashboard();
 </script>
 </body>
 </html>
-
-
