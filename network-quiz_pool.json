@@ -1,0 +1,2002 @@
+[
+  {
+    "id": 1,
+    "ans": "O",
+    "question": "資訊安全的三大核心目標（CIA 三要素）分別為機密性、完整性與可用性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 1"
+  },
+  {
+    "id": 2,
+    "ans": "X",
+    "question": "在資訊安全中，「可用性」是指確保資料不被未經授權的個人或實體取得。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 1"
+  },
+  {
+    "id": 3,
+    "ans": "O",
+    "question": "分散式阻斷服務攻擊 (DDoS) 的主要目的是消耗系統資源，導致服務癱瘓。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 4,
+    "ans": "X",
+    "question": "對稱加密技術使用一對不同的密鑰（公鑰與私鑰）來進行加密與解密。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 7"
+  },
+  {
+    "id": 5,
+    "ans": "O",
+    "question": "數位簽章可以提供完整性、認證以及不可否認性三大安全特性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 7"
+  },
+  {
+    "id": 6,
+    "ans": "X",
+    "question": "Cookie 中的 HttpOnly 屬性是為了讓 JavaScript 可以讀取 Cookie，以提升網站互動性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 9"
+  },
+  {
+    "id": 7,
+    "ans": "O",
+    "question": "TCP 是一種連接導向（Connection-oriented）的協定，傳輸資料前需先建立連線。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 2"
+  },
+  {
+    "id": 8,
+    "ans": "X",
+    "question": "UDP 協定提供流量控制與擁塞控制機制，能有效避免網路過載。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 4"
+  },
+  {
+    "id": 9,
+    "ans": "O",
+    "question": "TCP 的「三次握手」機制是用來確認雙方已準備就緒並建立連線。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 2"
+  },
+  {
+    "id": 10,
+    "ans": "X",
+    "question": "由於 UDP 標頭較大且機制複雜，因此其傳輸速度通常比 TCP 慢。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 4"
+  },
+  {
+    "id": 11,
+    "ans": "O",
+    "question": "影音串流（如 YouTube）與語音通話（VoIP）通常會優先選擇 UDP 協定，因為它們對即時性的要求高於資料完整性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 5"
+  },
+  {
+    "id": 12,
+    "ans": "O",
+    "question": "在封包結構中，IP 標頭包含來源 IP 位址與目的地 IP 位址。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 1"
+  },
+  {
+    "id": 13,
+    "ans": "X",
+    "question": "封包中的 TTL (Time To Live) 值每經過一個路由器會增加 1，直到達到最大值。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 14,
+    "ans": "O",
+    "question": "TCP 封包中的「序列號 (Sequence Number)」用於確保資料能有序且完整地傳輸。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 15,
+    "ans": "O",
+    "question": "Wireshark 是一款常用的封包擷取與分析工具，可用來追蹤 TCP 連線的完整通訊流程。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 5"
+  },
+  {
+    "id": 16,
+    "ans": "X",
+    "question": "1G 行動網路時代就已經全面進入數位化語音通訊。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 17,
+    "ans": "O",
+    "question": "5G 的三大設計目標包含超低延遲 (uRLLC)、超高頻寬 (eMBB) 與大規模連接 (mMTC)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 18,
+    "ans": "O",
+    "question": "多徑效應 (Multipath Effect) 指的是無線訊號經由不同路徑抵達接收端，可能導致干擾或訊號衰落。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 2"
+  },
+  {
+    "id": 19,
+    "ans": "X",
+    "question": "行動通訊系統中的「核心網路 (Core Network)」主要負責無線訊號的發射與接收。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 4"
+  },
+  {
+    "id": 20,
+    "ans": "O",
+    "question": "DNS 的主要功能是將人類易記的網域名稱轉換成電腦能識別的 IP 位址。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 1"
+  },
+  {
+    "id": 21,
+    "ans": "X",
+    "question": "DHCP 服務的主要用途是將網域名稱解析為 IP 位址，以提升上網速度。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 1"
+  },
+  {
+    "id": 22,
+    "ans": "O",
+    "question": "DHCP 的運作流程通常稱為 DORA，包含 Discover, Offer, Request, Acknowledgement 四個步驟。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 4"
+  },
+  {
+    "id": 23,
+    "ans": "O",
+    "question": "若電腦的 IP 位址顯示為 169.254.x.x，通常表示 DHCP 分配失敗。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 24,
+    "ans": "X",
+    "question": "網路釣魚 (Phishing) 屬於一種技術漏洞攻擊，與使用者的心理弱點無關。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 25,
+    "ans": "O",
+    "question": "防火牆可以透過封包過濾、規則比對等機制來監控進出網路的流量。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 5"
+  },
+  {
+    "id": 26,
+    "ans": "O",
+    "question": "Netstat 指令可用於查詢目前系統所有的 TCP/UDP 連線狀態。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 27,
+    "ans": "X",
+    "question": "在 OSI 模型中，傳輸層 (Transport Layer) 負責處理 MAC 位址與實體線路的傳輸。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 1"
+  },
+  {
+    "id": 28,
+    "ans": "O",
+    "question": "5G 網路切片 (Network Slicing) 技術允許將同一物理基礎架構劃分為多個邏輯子網，以適應不同服務需求。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 5"
+  },
+  {
+    "id": 29,
+    "ans": "X",
+    "question": "Traceroute 指令只能用於 Linux 系統，Windows 系統無法追蹤路由路徑。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 5"
+  },
+  {
+    "id": 30,
+    "ans": "O",
+    "question": "零信任安全 (Zero Trust Security) 的核心概念是「不信任任何人，持續驗證」。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 2"
+  },
+  {
+    "id": 31,
+    "ans": "O",
+    "question": "勒索軟體 (Ransomware) 的攻擊方式通常是加密受害者的檔案，並要求支付贖金以取得解密金鑰。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 32,
+    "ans": "X",
+    "question": "在資訊安全中，「不可否認性 (Non-repudiation)」是指接收者無法否認自己曾經收到過訊息。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 1"
+  },
+  {
+    "id": 33,
+    "ans": "O",
+    "question": "TCP 協定使用「滑動窗口 (Sliding Window)」機制來進行流量控制，以防止接收端緩衝區溢位。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 34,
+    "ans": "X",
+    "question": "TCP 的標頭 (Header) 長度通常比 UDP 的標頭來得短，因為其構造較簡單。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3-4"
+  },
+  {
+    "id": 35,
+    "ans": "X",
+    "question": "TCP 建立連線的三次握手流程順序為：SYN -> ACK -> SYN-ACK。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 2"
+  },
+  {
+    "id": 36,
+    "ans": "O",
+    "question": "在封包結構中，來源 IP 與目的地 IP 位址是位於網路層 (Network Layer) 的 IP 標頭中。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 1"
+  },
+  {
+    "id": 37,
+    "ans": "X",
+    "question": "5G 行動通訊主要採用的多工技術是傳統的 FDMA，而非 OFDMA。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 3"
+  },
+  {
+    "id": 38,
+    "ans": "X",
+    "question": "無線訊號的「多徑效應 (Multipath Effect)」有助於穩定訊號，不會造成干擾或延遲。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 2"
+  },
+  {
+    "id": 39,
+    "ans": "O",
+    "question": "在 DNS 資源記錄中，「A 記錄 (Address Record)」是用來將網域名稱對應到 IPv4 位址。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 40,
+    "ans": "X",
+    "question": "DHCP 的運作流程 DORA 中，'O' 代表的是 Open，表示伺服器開啟連接埠。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 4"
+  },
+  {
+    "id": 41,
+    "ans": "X",
+    "question": "會話 Cookie (Session Cookie) 會被儲存到硬碟中，即使關閉瀏覽器後仍然存在。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 9"
+  },
+  {
+    "id": 42,
+    "ans": "O",
+    "question": "第三方 Cookie 主要由非當前瀏覽網站的網域設定，常用於跨網站追蹤與廣告投放。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 9"
+  },
+  {
+    "id": 43,
+    "ans": "O",
+    "question": "DNS 查詢通常使用 UDP 協定，因為其請求與回應簡短快速，效率較高。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 5"
+  },
+  {
+    "id": 44,
+    "ans": "X",
+    "question": "封包標頭中的檢查碼 (Checksum) 可以自動修正傳輸過程中產生的所有錯誤。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 45,
+    "ans": "O",
+    "question": "4G (LTE) 網路架構轉向完全 IP 化，大幅提升了行動上網的速度。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 46,
+    "ans": "X",
+    "question": "若電腦自動取得的 IP 位址為 169.254.x.x，代表已成功從 DHCP 伺服器取得 IP。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 47,
+    "ans": "O",
+    "question": "網路釣魚攻擊 (Phishing) 常偽裝成可信任的實體，誘騙使用者提供敏感資訊。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 48,
+    "ans": "O",
+    "question": "UDP 的標頭結構相當精簡，大小僅約 8 位元組 (Bytes)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 4"
+  },
+  {
+    "id": 49,
+    "ans": "O",
+    "question": "Wireshark 的「Follow TCP Stream」功能可以協助使用者重組並檢視完整的通訊內容。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 5-6"
+  },
+  {
+    "id": 50,
+    "ans": "X",
+    "question": "無線頻譜資源是無限的，因此不需要政府或相關機構進行分配與授權。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 3"
+  },
+  {
+    "id": 51,
+    "ans": "X",
+    "question": "指令 'ipconfig /flushdns' 的主要用途是向 DHCP 伺服器重新請求 IP 位址。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 52,
+    "ans": "X",
+    "question": "封包過濾防火牆 (Packet Filtering Firewall) 主要深入檢查應用層的資料內容 (Payload)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 5"
+  },
+  {
+    "id": 53,
+    "ans": "O",
+    "question": "TCP 的重傳機制會在逾時未收到 ACK 或收到重複 ACK 時啟動。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 54,
+    "ans": "X",
+    "question": "MAC 位址主要用於網路層 (Layer 3) 的路由功能，負責跨網段的資料傳輸。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 3"
+  },
+  {
+    "id": 55,
+    "ans": "O",
+    "question": "MIMO 技術利用多根天線發送與接收訊號，能提升資料傳輸量與抗干擾能力。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 2"
+  },
+  {
+    "id": 56,
+    "ans": "X",
+    "question": "DNS 系統採用扁平式管理架構，所有網域名稱都由同一台伺服器管理。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 2"
+  },
+  {
+    "id": 57,
+    "ans": "X",
+    "question": "對稱加密技術 (Symmetric Encryption) 使用一把公鑰加密，另一把私鑰解密。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 7"
+  },
+  {
+    "id": 58,
+    "ans": "O",
+    "question": "指令 'ss' 是一個比 'netstat' 更快速且現代化的網路連線統計工具。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 59,
+    "ans": "O",
+    "question": "當封包的 TTL (Time To Live) 值降至 0 時，該封包會被路由器丟棄。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 60,
+    "ans": "X",
+    "question": "行動通訊中的 RAN 是指「遠端區域網路 (Remote Area Network)」。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 4"
+  },
+  {
+    "id": 61,
+    "ans": "X",
+    "question": "社交工程攻擊 (Social Engineering) 主要依賴軟體程式碼的漏洞來入侵系統。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 62,
+    "ans": "O",
+    "question": "「零日攻擊 (Zero-day Attack)」是指駭客利用尚未被開發者發現或修補的漏洞進行攻擊。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 63,
+    "ans": "X",
+    "question": "封包過濾防火牆 (Packet Filtering Firewall) 具備深度檢查應用層資料內容的能力。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 5"
+  },
+  {
+    "id": 64,
+    "ans": "X",
+    "question": "數位簽章中的雜湊函數主要是用來對訊息內容進行加密，防止資料外洩。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 7"
+  },
+  {
+    "id": 65,
+    "ans": "O",
+    "question": "第一方 Cookie 是由使用者當前瀏覽的網站所設定，通常用於記錄登入狀態或購物車內容。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 9"
+  },
+  {
+    "id": 66,
+    "ans": "X",
+    "question": "混合加密系統通常使用非對稱加密來處理大量資料，因為其運算速度較快。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 7"
+  },
+  {
+    "id": 67,
+    "ans": "X",
+    "question": "UDP 協定因為標頭結構複雜，所以其標頭大小通常比 TCP 來得大。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 4"
+  },
+  {
+    "id": 68,
+    "ans": "X",
+    "question": "TCP 的「擁塞控制 (Congestion Control)」主要是為了防止單一接收端的緩衝區溢位。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 69,
+    "ans": "O",
+    "question": "在 TCP 傳輸中，若發送方在指定時間內未收到 ACK 確認，會自動重新傳送該封包。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 70,
+    "ans": "X",
+    "question": "DNS 查詢為了確保資料絕對正確，主要強制使用 TCP 協定進行傳輸。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 5"
+  },
+  {
+    "id": 71,
+    "ans": "O",
+    "question": "Ping 指令使用 ICMP 協定來測試主機之間的網路連通性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 72,
+    "ans": "X",
+    "question": "由於 UDP 傳輸速度快，因此非常適合用於要求資料完整性的檔案傳輸 (FTP)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3-4"
+  },
+  {
+    "id": 73,
+    "ans": "X",
+    "question": "封包中的「裝載 (Payload)」大小是固定的，不會隨應用程式資料量而改變。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 1"
+  },
+  {
+    "id": 74,
+    "ans": "O",
+    "question": "IP 標頭中的 TTL (Time To Live) 欄位是用來限制封包在網路中可經過的最大路由器數量。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 75,
+    "ans": "O",
+    "question": "TCP 封包中的「確認號 (ACK Number)」代表接收端期望收到的下一個資料序列號。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 76,
+    "ans": "X",
+    "question": "Wireshark 是一款僅能在 Linux 作業系統上運行的封包分析工具。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 5"
+  },
+  {
+    "id": 77,
+    "ans": "O",
+    "question": "TCP 的「累積確認」機制表示當收到一個 ACK 時，代表該號碼前的所有資料皆已成功接收。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 78,
+    "ans": "O",
+    "question": "封包分析中的「時間軸分析」有助於資安人員掌握攻擊行為發生的先後順序。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 3"
+  },
+  {
+    "id": 79,
+    "ans": "X",
+    "question": "1G 行動通訊網路已經採用數位訊號傳輸，安全性比類比訊號高。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 80,
+    "ans": "X",
+    "question": "4G LTE 網路架構保留了傳統電路交換 (Circuit Switching) 技術來傳輸語音。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 4"
+  },
+  {
+    "id": 81,
+    "ans": "O",
+    "question": "5G 的三大核心應用場景包括 eMBB (增強型行動寬頻)、uRLLC (超可靠低延遲通訊) 與 mMTC (大規模機器通訊)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 82,
+    "ans": "O",
+    "question": "OFDMA 技術將頻帶分割為多個子載波，是 4G 與 5G 網路的重要基礎技術。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 2"
+  },
+  {
+    "id": 83,
+    "ans": "X",
+    "question": "「網路切片 (Network Slicing)」是 4G 網路才開始導入的核心架構技術。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 5"
+  },
+  {
+    "id": 84,
+    "ans": "O",
+    "question": "Open RAN 強調開放介面與軟硬體解耦，使不同廠商的設備能夠互相協作。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 4"
+  },
+  {
+    "id": 85,
+    "ans": "O",
+    "question": "DNS 系統採用階層式結構，從根域 (Root) 開始逐層授權管理。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 2"
+  },
+  {
+    "id": 86,
+    "ans": "X",
+    "question": "DHCP 伺服器的主要功能是將網域名稱解析為對應的 IP 位址。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 1"
+  },
+  {
+    "id": 87,
+    "ans": "O",
+    "question": "若使用者可以使用 IP 位址連線網站，但無法使用網址連線，通常是 DNS 設定有誤。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 88,
+    "ans": "X",
+    "question": "DHCP 的 Discover 步驟是透過單播 (Unicast) 方式直接向特定的 DHCP 伺服器請求 IP。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 4"
+  },
+  {
+    "id": 89,
+    "ans": "O",
+    "question": "在 Windows 系統中，指令 'ipconfig /renew' 可用於強制更新 IP 位址租約。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 90,
+    "ans": "X",
+    "question": "一旦 DHCP 租約時間到期，該 IP 位址就會自動轉為該裝置的永久固定 IP。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 4"
+  },
+  {
+    "id": 91,
+    "ans": "O",
+    "question": "網頁應用防火牆 (WAF) 專注於過濾 HTTP/HTTPS 流量，可有效防止 SQL 注入與 XSS 攻擊。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 5"
+  },
+  {
+    "id": 92,
+    "ans": "X",
+    "question": "在非對稱加密機制中，私密金鑰 (Private Key) 可以公開給任何人，用於加密資料傳送給擁有者。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 7"
+  },
+  {
+    "id": 93,
+    "ans": "O",
+    "question": "Netcat (nc) 是一個功能強大的網路工具，可用於測試 TCP 與 UDP 的連通性及進行資料傳輸。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 94,
+    "ans": "X",
+    "question": "Telnet 是一種高安全性的遠端連線協定，預設會對傳輸內容進行加密。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 3"
+  },
+  {
+    "id": 95,
+    "ans": "O",
+    "question": "IP 標頭中的「通訊協定 (Protocol)」欄位是用來指示裝載資料 (Payload) 使用的上層協定 (如 TCP/UDP)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 96,
+    "ans": "O",
+    "question": "波束賦形 (Beamforming) 技術可以聚焦無線訊號能量，有助於改善訊號被阻擋或遮蔽的問題。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 2"
+  },
+  {
+    "id": 97,
+    "ans": "X",
+    "question": "2G 行動通訊系統的主要突破在於支援了高速視訊通話與多媒體串流服務。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 98,
+    "ans": "O",
+    "question": "DNS 中的 CNAME 記錄 (Canonical Name Record) 是用於將一個網域名稱設定為另一個網域的別名。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 99,
+    "ans": "X",
+    "question": "DHCP 的運作流程中，第一步是由伺服器主動發送「DHCP Offer」給用戶端。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 4"
+  },
+  {
+    "id": 100,
+    "ans": "O",
+    "question": "資訊安全中的「不可否認性」能防止發送者事後否認其曾經傳送過某則訊息。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 1"
+  },
+  {
+    "id": 101,
+    "ans": "X",
+    "question": "UDP 協定具備連線建立機制，能確保資料在傳輸過程中不遺失。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 4"
+  },
+  {
+    "id": 102,
+    "ans": "X",
+    "question": "MAC 位址屬於 OSI 模型中的第三層 (網路層)，主要用於跨網段的資料路由。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 3"
+  },
+  {
+    "id": 103,
+    "ans": "O",
+    "question": "5G 的 uRLLC (超可靠低延遲通訊) 技術場景適用於自動駕駛與智慧工廠等應用。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 104,
+    "ans": "X",
+    "question": "nslookup 指令的主要用途是測試 DHCP 伺服器是否正常分配 IP 位址。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 105,
+    "ans": "O",
+    "question": "殭屍網路 (Botnet) 是由大量受感染的裝置組成，常被攻擊者用來發動 DDoS 攻擊。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 1"
+  },
+  {
+    "id": 106,
+    "ans": "X",
+    "question": "TCP 的標頭長度固定為 8 位元組 (Bytes)，因此比 UDP 更輕量。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3-4"
+  },
+  {
+    "id": 107,
+    "ans": "O",
+    "question": "封包中的「裝載 (Payload)」是指實際承載的應用層資料內容，如網頁或電子郵件內容。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 1"
+  },
+  {
+    "id": 108,
+    "ans": "O",
+    "question": "無線訊號的「路徑損耗」是指訊號強度會隨著傳輸距離增加而自然衰減的現象。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 2"
+  },
+  {
+    "id": 109,
+    "ans": "O",
+    "question": "靜態 IP (Static IP) 是指手動設定且固定不變的 IP 位址，不透過 DHCP 動態分配。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 110,
+    "ans": "O",
+    "question": "社交工程攻擊 (Social Engineering) 主要利用人性的弱點 (如好奇、恐懼) 來誘騙受害者。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 111,
+    "ans": "X",
+    "question": "TCP 的「流量控制 (Flow Control)」是用來處理整體網路的擁塞狀況，避免網路癱瘓。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 112,
+    "ans": "X",
+    "question": "封包的來源埠號 (Source Port) 與目的埠號 (Destination Port) 是記錄在 IP 標頭中。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 113,
+    "ans": "O",
+    "question": "4G (LTE) 網路架構全面轉向 IP 化，不再使用傳統的電路交換技術。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 114,
+    "ans": "O",
+    "question": "DHCP 伺服器通常監聽 UDP Port 67 來接收客戶端的請求。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 115,
+    "ans": "X",
+    "question": "在數位憑證管理 (PKI) 中，憑證授權中心 (CA) 是將使用者的身分與其私密金鑰進行綁定。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 8"
+  },
+  {
+    "id": 116,
+    "ans": "X",
+    "question": "Ping 工具是利用 TCP 協定的三次握手機制來測試網路連通性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 117,
+    "ans": "O",
+    "question": "封包分析中的「重組 (Reassembly)」技術可將零碎的封包還原成完整的通訊內容。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 3"
+  },
+  {
+    "id": 118,
+    "ans": "X",
+    "question": "TDMA 多工技術是將頻譜切割成多個不同的頻帶，分配給不同用戶同時使用。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 2"
+  },
+  {
+    "id": 119,
+    "ans": "O",
+    "question": "在 Windows 中執行 `ipconfig /all` 可以查看到目前使用的 DNS 伺服器 IP 位址。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 120,
+    "ans": "O",
+    "question": "次世代防火牆 (NGFW) 整合了應用程式識別與入侵防禦系統 (IPS) 等進階功能。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 5"
+  },
+  {
+    "id": 121,
+    "ans": "O",
+    "question": "中間人攻擊 (MITM) 是指攻擊者攔截並可能竄改雙方通訊資料的攻擊手法。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 122,
+    "ans": "X",
+    "question": "跨網站指令碼攻擊 (XSS) 的主要攻擊目標是直接竊取資料庫中的所有資料。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 123,
+    "ans": "O",
+    "question": "電子郵件傳輸協定 (如 SMTP, POP3) 為了確保資料不遺失，通常採用 TCP 協定。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 124,
+    "ans": "O",
+    "question": "5G 核心網路 (5GC) 採用服務導向架構 (SBA)，將功能模組化以提升彈性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 4"
+  },
+  {
+    "id": 125,
+    "ans": "O",
+    "question": "封包中的「來源埠號 (Source Port)」可用來識別發送資料的應用程式或服務。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 126,
+    "ans": "O",
+    "question": "DNS 的管理架構採用階層式結構，最頂層為根域 (Root)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 2"
+  },
+  {
+    "id": 127,
+    "ans": "O",
+    "question": "2G 行動通訊時代推動了簡訊 (SMS) 功能的普及。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 128,
+    "ans": "X",
+    "question": "對稱加密的主要優點是密鑰分發非常容易，不存在密鑰外洩的風險。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 7"
+  },
+  {
+    "id": 129,
+    "ans": "X",
+    "question": "UDP 協定會在封包中加入序列號 (Sequence Number)，以利接收端進行資料排序。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 4"
+  },
+  {
+    "id": 130,
+    "ans": "O",
+    "question": "Ping 與 Traceroute 工具皆利用 ICMP 協定來進行網路檢測。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 131,
+    "ans": "O",
+    "question": "6G 行動通訊預期將結合人工智慧 (AI) 與太空通訊，實現全域覆蓋。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 132,
+    "ans": "O",
+    "question": "DNS over HTTPS (DoH) 技術可以提升 DNS 查詢的隱私性與安全性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 1"
+  },
+  {
+    "id": 133,
+    "ans": "O",
+    "question": "TCP 的流量控制 (Flow Control) 是針對接收端的負載能力進行調整，而非針對整個網路。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 134,
+    "ans": "O",
+    "question": "IP 標頭中的「版本 (Version)」欄位是用來區分該封包是 IPv4 還是 IPv6。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 135,
+    "ans": "O",
+    "question": "3G 行動通訊提升了資料速率，使得視訊通話與行動上網成為可能。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 136,
+    "ans": "X",
+    "question": "DHCP 分配的 IP 位址是永久有效的，除非管理者手動移除，否則不會過期。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 137,
+    "ans": "X",
+    "question": "零信任安全 (Zero Trust Security) 的核心原則是「先信任，再驗證」。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 2"
+  },
+  {
+    "id": 138,
+    "ans": "X",
+    "question": "數位簽章的製作過程是使用私鑰對「原始訊息的全部內容」直接進行加密，而非雜湊值。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 8"
+  },
+  {
+    "id": 139,
+    "ans": "O",
+    "question": "路由器主要依據封包中的「目的地 IP 位址」來決定轉送路徑。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 4"
+  },
+  {
+    "id": 140,
+    "ans": "O",
+    "question": "無線通訊中的「多徑效應」可能造成訊號衰落 (Fading)，影響傳輸品質。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 2"
+  },
+  {
+    "id": 141,
+    "ans": "O",
+    "question": "字典攻擊 (Dictionary Attack) 是一種利用預設字詞清單來嘗試破解密碼的手法。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 142,
+    "ans": "O",
+    "question": "TCP 標頭的大小通常約為 20 位元組 (Bytes)，包含多種控制資訊。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 143,
+    "ans": "X",
+    "question": "封包中的 MAC 位址主要用於跨越網際網路的長距離路由傳輸。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 3"
+  },
+  {
+    "id": 144,
+    "ans": "O",
+    "question": "4G (LTE) 網路架構實現了完全 IP 化，大幅提升行動寬頻速度。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 145,
+    "ans": "O",
+    "question": "DHCP 伺服器通常使用 UDP Port 67 來接收用戶端的請求。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 146,
+    "ans": "O",
+    "question": "資訊安全中的「不可否認性」是為了確保發起動作的實體無法在事後否認其行為。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 1"
+  },
+  {
+    "id": 147,
+    "ans": "X",
+    "question": "TCP 使用「滑動窗口」機制主要是為了控制網路的擁塞程度 (Congestion Control)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 148,
+    "ans": "O",
+    "question": "千面人病毒 (Polymorphic Virus) 每次複製時會改變自身程式碼，以躲避防毒軟體偵測。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 4"
+  },
+  {
+    "id": 149,
+    "ans": "O",
+    "question": "Cookie 的 Path 屬性可以用來限定該 Cookie 只在網站的特定目錄下有效。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 9"
+  },
+  {
+    "id": 150,
+    "ans": "O",
+    "question": "線上遊戲通常優先使用 UDP 協定，因為低延遲比資料完整性更重要。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 5"
+  },
+  {
+    "id": 151,
+    "ans": "O",
+    "question": "DevSecOps 的核心概念是將安全性嵌入 DevOps 流程中，實現「安全左移 (Shift Left)」。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 11"
+  },
+  {
+    "id": 152,
+    "ans": "O",
+    "question": "端點偵測與回應 (EDR) 系統專注於持續監控端點裝置，以偵測進階威脅並自動回應。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 11"
+  },
+  {
+    "id": 153,
+    "ans": "X",
+    "question": "雲端存取安全代理程式 (CASB) 主要安裝在個人的手機端，用來防止手機中毒。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 11"
+  },
+  {
+    "id": 154,
+    "ans": "O",
+    "question": "雙因素驗證 (2FA) 要求使用者提供兩種不同類型的憑證來確認身分，以提升安全性。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 11"
+  },
+  {
+    "id": 155,
+    "ans": "X",
+    "question": "SQL 注入攻擊 (SQL Injection) 是利用網站對輸入驗證的漏洞，將惡意檔案上傳至伺服器。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 156,
+    "ans": "O",
+    "question": "在加密技術中，雜湊函數 (Hash Function) 能將任意長度的訊息轉換為固定長度的雜湊值。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 8"
+  },
+  {
+    "id": 157,
+    "ans": "X",
+    "question": "數位簽章的驗證過程中，接收者是使用發送者的「私密金鑰」來解密簽章。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 7"
+  },
+  {
+    "id": 158,
+    "ans": "O",
+    "question": "Cookie 中的 Domain 屬性是用來指定該 Cookie 屬於哪個網站或網域。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 9"
+  },
+  {
+    "id": 159,
+    "ans": "X",
+    "question": "殭屍 Cookie (Zombie Cookie) 是一種只要使用者清除瀏覽器紀錄後就會永久消失的 Cookie。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 10"
+  },
+  {
+    "id": 160,
+    "ans": "O",
+    "question": "GDPR 與 CCPA 等法規的制定，主要是為了加強對 Cookie 使用與用戶隱私的管控。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 10"
+  },
+  {
+    "id": 161,
+    "ans": "X",
+    "question": "TCP 協定位於 DoD 模型的「網路層 (Internet Layer)」。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 1"
+  },
+  {
+    "id": 162,
+    "ans": "O",
+    "question": "在 DoD 模型中，傳輸層 (Host-to-Host Layer) 負責端到端的資料傳輸可靠性與流量控制。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 1"
+  },
+  {
+    "id": 163,
+    "ans": "O",
+    "question": "HTTP 與 FTP 協定皆屬於 TCP/IP 模型中的應用層協定。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 1"
+  },
+  {
+    "id": 164,
+    "ans": "X",
+    "question": "UDP 協定保證資料會依照發送的順序抵達接收端。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 4"
+  },
+  {
+    "id": 165,
+    "ans": "O",
+    "question": "TCP 使用確認回應 (ACK) 機制來告知發送方哪些資料已成功接收。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 2"
+  },
+  {
+    "id": 166,
+    "ans": "X",
+    "question": "Traceroute 指令是用來測試 TCP 端口連通性的工具。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 167,
+    "ans": "O",
+    "question": "Linux 系統中的 iptables 可用來設定防火牆規則，允許或阻擋特定流量。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 168,
+    "ans": "X",
+    "question": "封包中的來源埠號 (Source Port) 是用來定義接收資料的應用程式端點。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 169,
+    "ans": "O",
+    "question": "在封包分析中，TCP 的「重傳機制」可以幫助我們判斷網路是否有丟包或壅塞情況。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 170,
+    "ans": "O",
+    "question": "Wireshark 可以透過過濾器 (如 ip.addr) 來篩選出特定 IP 的封包。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 6"
+  },
+  {
+    "id": 171,
+    "ans": "X",
+    "question": "封包的 TTL 值若設定得越大，傳輸速度就會越快。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 2"
+  },
+  {
+    "id": 172,
+    "ans": "O",
+    "question": "TCP 封包標頭中的「序列號」表示該封包資料在整個資料流中的起始位元組位置。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 4"
+  },
+  {
+    "id": 173,
+    "ans": "X",
+    "question": "3G 行動網路的主要標準 WCDMA 是屬於 TDMA 多址技術的一種。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 3"
+  },
+  {
+    "id": 174,
+    "ans": "O",
+    "question": "行動網路中的「核心網路」負責用戶認證、移動性管理與資料路由。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 4"
+  },
+  {
+    "id": 175,
+    "ans": "O",
+    "question": "Massive MIMO 技術透過大量天線提升頻譜效率與覆蓋能力。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 4"
+  },
+  {
+    "id": 176,
+    "ans": "X",
+    "question": "1G 行動網路就已經支援了國際漫遊功能。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 177,
+    "ans": "O",
+    "question": "CDMA 技術允許各用戶訊號加上獨特編碼序列，在同一頻帶也能共用。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 3"
+  },
+  {
+    "id": 178,
+    "ans": "O",
+    "question": "DNS 解析過程中的「正向查詢」是指將網域名稱轉換為 IP 位址。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 179,
+    "ans": "X",
+    "question": "DNS 記錄中的 MX 記錄主要用於設定網站的主機別名。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 180,
+    "ans": "X",
+    "question": "DHCP 的租約時間 (Lease Time) 是指使用者必須支付網路費用的期限。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 4"
+  },
+  {
+    "id": 181,
+    "ans": "O",
+    "question": "若網路上存在多個 DHCP 伺服器，可能會導致 IP 分配混亂與衝突。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 182,
+    "ans": "O",
+    "question": "DHCP 伺服器可以設定 IP 位址保留，讓特定 MAC 位址的設備取得固定 IP。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 5"
+  },
+  {
+    "id": 183,
+    "ans": "X",
+    "question": "開機型病毒 (Boot Sector Virus) 是在作業系統完全載入後才開始執行的。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 3"
+  },
+  {
+    "id": 184,
+    "ans": "O",
+    "question": "巨集病毒 (Macro Virus) 常利用 Office 軟體的巨集功能感染文件檔案。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 4"
+  },
+  {
+    "id": 185,
+    "ans": "O",
+    "question": "防火牆的「規則比對」通常會將封包資訊與事先設定的安全規則進行比對。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 5"
+  },
+  {
+    "id": 186,
+    "ans": "X",
+    "question": "狀態檢視防火牆 (Stateful Inspection Firewall) 的安全性比傳統封包過濾防火牆低。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 5"
+  },
+  {
+    "id": 187,
+    "ans": "O",
+    "question": "RSA 演算法是一種廣泛使用的非對稱加密演算法，基於大質數分解的數學難題。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 8"
+  },
+  {
+    "id": 188,
+    "ans": "X",
+    "question": "在數位簽章中，SHA-256 是一種常用的對稱加密演算法。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 8"
+  },
+  {
+    "id": 189,
+    "ans": "O",
+    "question": "HttpOnly 屬性的 Cookie 無法被 JavaScript 讀取，能有效防範 XSS 攻擊竊取 Cookie。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 9"
+  },
+  {
+    "id": 190,
+    "ans": "X",
+    "question": "Session Cookie 包含明確的到期日期，即使關閉瀏覽器也會保留在硬碟中。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "網路與資訊安全講義(第14-15周).pdf Page 9"
+  },
+  {
+    "id": 191,
+    "ans": "O",
+    "question": "UDP 適合用於 DNS 查詢，因為其請求回應過程簡短且不需要建立連線。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 5"
+  },
+  {
+    "id": 192,
+    "ans": "X",
+    "question": "TCP 的「擁塞控制」與「流量控制」是完全相同的機制。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 3"
+  },
+  {
+    "id": 193,
+    "ans": "O",
+    "question": "使用 `netstat -tuln` 指令可以顯示 Linux 系統中所有 TCP/UDP 的監聽端口。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 7"
+  },
+  {
+    "id": 194,
+    "ans": "O",
+    "question": "IP 標頭中的「裝載 (Payload)」通常不包含路由資訊，這些資訊主要在標頭中。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 1"
+  },
+  {
+    "id": 195,
+    "ans": "X",
+    "question": "Wireshark 的「Follow TCP Stream」功能主要是用來解密 HTTPS 加密流量。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "封包結構與封包分析課堂講義(第16周).pdf Page 6"
+  },
+  {
+    "id": 196,
+    "ans": "O",
+    "question": "4G 網路促成了 App 經濟與行動影音服務的蓬勃發展。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 197,
+    "ans": "X",
+    "question": "5G 的 eMBB 特性是專為低數據流量的物聯網設備所設計的。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "行動通訊技術概論講義(第12-13周).pdf Page 1"
+  },
+  {
+    "id": 198,
+    "ans": "O",
+    "question": "DHCP Offer 封包是由 DHCP 伺服器發送給客戶端的。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 4"
+  },
+  {
+    "id": 199,
+    "ans": "O",
+    "question": "若 DNS 伺服器故障，用戶可能無法透過網址瀏覽網頁，但網路連線本身可能正常。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "DNS 與 DHCP 服務解析(第10-11周).pdf Page 3"
+  },
+  {
+    "id": 200,
+    "ans": "X",
+    "question": "在 OSI 模型中，IP 協定是運作於資料鏈結層 (Data Link Layer)。",
+    "option": {
+      "O": "正確",
+      "X": "錯誤"
+    },
+    "detail": "TCPUDP解析(第8周).pdf Page 1"
+  }
+]
