@@ -1,3980 +1,621 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>機器學習題庫測驗系統</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            /* 共用色系 */
-            --primary: #2563eb;
-            --secondary: #64748b;
-            --success: #22c55e;
-            --danger: #ef4444;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>網路通訊期末模擬試題</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      /* 基礎色票 (Light Mode Default) */
+      --primary: #2563eb;
+      --primary-fg: #ffffff;
+      --secondary: #64748b;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg-sub: #f1f5f9;
+      /* 統計框背景 */
+      --bg-hover: #eff6ff;
+      /* 選項懸浮/選中背景 */
+      --bg-danger-light: #fef2f2;
+      /* 錯誤提示背景 */
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
 
-            /* 預設淺色模式 (Light Mode) */
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --stat-bg: #f1f5f9;
-            --review-bg: #fef2f2;
-            --option-hover: #eff6ff;
-            --option-checked: #eff6ff;
-            --chart-grid: #e2e8f0;
-            --chart-text: #64748b;
-        }
+    /* 深色模式 (Dark Mode) */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #60a5fa;
+        --primary-fg: #0f172a;
+        --secondary: #94a3b8;
+        --success: #4ade80;
+        --danger: #f87171;
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --bg-sub: #334155;
+        --bg-hover: #1e3a8a;
+        --bg-danger-light: rgba(239, 68, 68, 0.15);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+      }
+    }
 
-        /* 自動偵測深色模式 (Dark Mode) */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0f172a;       /* Slate 900 */
-                --card: #1e293b;     /* Slate 800 */
-                --text-main: #f1f5f9;/* Slate 100 */
-                --text-muted: #94a3b8; /* Slate 400 */
-                --border: #334155;   /* Slate 700 */
-                --stat-bg: #334155;  /* Slate 700 */
-                --review-bg: #450a0a;/* Red 950 (更深一點的紅背景) */
-                --option-hover: #1e3a8a; /* Blue 900 */
-                --option-checked: #172554; /* Blue 950 */
-                --chart-grid: #334155;
-                --chart-text: #cbd5e1;
-            }
-        }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+    }
 
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background-color: var(--bg); 
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px; 
-            line-height: 1.6; 
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { 
-            background: var(--card); 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
-            padding: 24px; 
-            margin-bottom: 20px; 
-            transition: background-color 0.3s;
-        }
-        h1, h2, h3 { margin-top: 0; color: var(--text-main); }
-        .btn { background-color: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 1rem; transition: opacity 0.2s; }
-        .btn:hover { opacity: 0.9; }
-        .btn-danger { background-color: var(--danger); }
-        .timer { font-size: 1.5rem; font-weight: bold; color: var(--danger); text-align: right; margin-bottom: 10px; }
-        
-        .question-block { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .options-grid { display: grid; gap: 10px; margin-top: 10px; }
-        .option-label { 
-            display: block; 
-            padding: 10px; 
-            border: 2px solid var(--border); 
-            border-radius: 8px; 
-            cursor: pointer; 
-            transition: all 0.2s; 
-            color: var(--text-main);
-        }
-        .option-label:hover { border-color: var(--primary); background: var(--option-hover); }
-        input[type="radio"]:checked + .option-label { border-color: var(--primary); background-color: var(--option-checked); font-weight: bold; }
-        input[type="radio"] { display: none; }
-        
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; text-align: center; }
-        .stat-box { background: var(--stat-bg); padding: 15px; border-radius: 8px; transition: background-color 0.3s; }
-        .stat-val { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
-        
-        .review-item { 
-            border-left: 4px solid var(--danger); 
-            padding-left: 15px; 
-            margin-bottom: 20px; 
-            background: var(--review-bg); 
-            padding: 15px; 
-            border-radius: 0 8px 8px 0; 
-            transition: background-color 0.3s;
-        }
-        .correct-ans { color: var(--success); font-weight: bold; }
-        .wrong-ans { color: var(--danger); text-decoration: line-through; }
-        
-        .view { display: none; }
-        .active-view { display: block; }
-        .progress-bar { width: 100%; height: 10px; background-color: var(--border); border-radius: 5px; margin-top: 5px; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: var(--success); width: 0%; transition: width 0.3s; }
-    </style>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin-top: 0;
+      color: var(--text);
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: var(--primary-fg);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: opacity 0.2s;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .timer {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--danger);
+      text-align: right;
+      margin-bottom: 10px;
+    }
+
+    .question-block {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .options-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .option-label {
+      display: block;
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+
+    /* .option-label:hover { border-color: var(--primary); } */
+    input[type="radio"]:checked+.option-label {
+      border-color: var(--primary);
+      background-color: var(--bg-hover);
+      font-weight: bold;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .stat-box {
+      background: var(--bg-sub);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .stat-val {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .review-item {
+      border-left: 4px solid var(--danger);
+      padding-left: 15px;
+      margin-bottom: 20px;
+      background: var(--bg-danger-light);
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .correct-ans {
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    .wrong-ans {
+      color: var(--danger);
+      text-decoration: line-through;
+    }
+
+    .explanation {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--secondary);
+      font-size: 0.9em;
+      color: var(--text-muted);
+    }
+
+    .view {
+      display: none;
+    }
+
+    .active-view {
+      display: block;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="container">
+  <div class="container">
     <div id="view-dashboard" class="view active-view">
-        <div class="card">
-            <h1>機器學習題庫測驗</h1>
-            <p>資料庫共收錄 <span id="total-pool-size">0</span> 題。</p>
-            <div style="margin-bottom: 20px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:var(--text-muted);">
-                    <span>題庫覆蓋率 (完成一輪自動重置)</span>
-                    <span id="coverage-text">0%</span>
-                </div>
-                <div class="progress-bar"><div id="coverage-bar" class="progress-fill"></div></div>
-            </div>
-
-            <div class="stat-grid">
-                <div class="stat-box"><div>歷史平均分</div><div class="stat-val" id="avg-score">--</div></div>
-                <div class="stat-box"><div>總正確率</div><div class="stat-val" id="total-accuracy">--%</div></div>
-                <div class="stat-box"><div>累積錯題數</div><div class="stat-val" id="total-wrong-count">0</div></div>
-            </div>
-            <button class="btn" onclick="window.startQuiz()">開始測驗(20題)</button>
-            <button class="btn btn-danger" onclick="window.clearData()" style="float: right;">清除紀錄</button>
+      <div class="card">
+        <h1>網路通訊期末模擬試題</h1>
+        <p>資料庫共收錄 <span id="total-pool-size">0</span> 題。每次隨機測驗 20 題。</p>
+        <div style="margin-bottom: 20px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:var(--text-muted);">
+            <span>題庫覆蓋率 (完成一輪自動重置)</span>
+            <span id="coverage-text">0%</span>
+          </div>
+          <div
+            style="width: 100%; height: 10px; background-color: var(--border); border-radius: 5px; margin-top: 5px; overflow: hidden;">
+            <div id="coverage-bar"
+              style="height: 100%; background-color: var(--success); width: 0%; transition: width 0.3s;"></div>
+          </div>
         </div>
-        <div class="card">
-            <h3>成績走勢圖</h3>
-            <canvas id="scoreChart"></canvas>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div>歷史平均分</div>
+            <div class="stat-val" id="avg-score">--</div>
+          </div>
+          <div class="stat-box">
+            <div>總正確率</div>
+            <div class="stat-val" id="total-accuracy">--%</div>
+          </div>
+          <div class="stat-box">
+            <div>累積錯題數</div>
+            <div class="stat-val" id="total-wrong-count">0</div>
+          </div>
         </div>
-        <div class="card">
-            <h3>歷史錯題庫 (最近 50 筆)</h3>
-            <div id="wrong-history-list" style="max-height: 300px; overflow-y: auto;"></div>
-        </div>
+        <button class="btn" onclick="window.startQuiz()">開始測驗 (20題)</button>
+        <button class="btn btn-danger" onclick="window.clearData()" style="float: right;">清除紀錄</button>
+      </div>
+      <div class="card">
+        <h3>成績走勢圖</h3>
+        <canvas id="scoreChart"></canvas>
+      </div>
+      <div class="card">
+        <h3>歷史錯題庫 (最近 50 筆)</h3>
+        <div id="wrong-history-list" style="max-height: 300px; overflow-y: auto;"></div>
+      </div>
     </div>
-
     <div id="view-quiz" class="view">
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2>測驗進行中</h2>
-                <div class="timer" id="timer">15:00</div>
-            </div>
-            <div id="quiz-container"></div>
-            <button class="btn" onclick="window.submitQuiz()">送出試卷</button>
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>測驗進行中</h2>
+          <div class="timer" id="timer">15:00</div>
         </div>
+        <div id="quiz-container"></div>
+        <button class="btn" onclick="window.submitQuiz()">送出試卷</button>
+      </div>
     </div>
 
     <div id="view-result" class="view">
-        <div class="card">
-            <h2>本次測驗結果</h2>
-            <div class="stat-grid">
-                <div class="stat-box"><div>得分</div><div class="stat-val" id="result-score">0</div></div>
-                <div class="stat-box"><div>正確率</div><div class="stat-val" id="result-accuracy">0%</div></div>
-                <div class="stat-box"><div>耗時</div><div class="stat-val" id="result-time">00:00</div></div>
-            </div>
-            <button class="btn" onclick="window.showDashboard()">返回主頁</button>
+      <div class="card">
+        <h2>本次測驗結果</h2>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div>得分</div>
+            <div class="stat-val" id="result-score">0</div>
+          </div>
+          <div class="stat-box">
+            <div>正確率</div>
+            <div class="stat-val" id="result-accuracy">0%</div>
+          </div>
+          <div class="stat-box">
+            <div>耗時</div>
+            <div class="stat-val" id="result-time">00:00</div>
+          </div>
         </div>
-        <div class="card">
-            <h3>錯題檢討</h3>
-            <div id="review-container"></div>
-        </div>
+        <button class="btn" onclick="window.showDashboard()">返回主頁</button>
+      </div>
+      <div class="card">
+        <h3>錯題檢討</h3>
+        <div id="review-container"></div>
+      </div>
     </div>
-</div>
+  </div>
 
-<script>
-    // --- 1. DATA POOL ---
-    // 請務必保留這裡的 questionPool 完整資料
- const questionPool = 
-     [
-  {
-    "id": 1,
-    "a": "B",
-    "q": "在PyTorch中,「tensor」最貼近下列哪一個概念?",
-    "o": {
-      "A": "僅能存放整數的序列",
-      "B": "可在CPU/GPU 上運算的多維陣列資料結構",
-      "C": "只用於影像的像素矩陣",
-      "D": "只能表示標量的資料型別"
-    }
-  },
-  {
-    "id": 2,
-    "a": "C",
-    "q": "下列哪一項最能描述 PyTorch的「動態計算圖(dynamic computation graph)」特性?",
-    "o": {
-      "A": "模型結構在編譯後不可更動",
-      "B": "每次 forward 的路徑必須完全相同",
-      "C": "計算圖在執行時建立,可依控制流程改變",
-      "D": "只能用於推論,不能用於訓練"
-    }
-  },
-  {
-    "id": 3,
-    "a": "D",
-    "q": "下列哪一個操作最常用於「改變張量 shape 而不改變元素總數」?",
-    "o": {
-      "A": "torch.cat",
-      "B": "torch.stack",
-      "C": "torch.split",
-      "D": "tensor.reshape"
-    }
-  },
-  {
-    "id": 4,
-    "a": "B",
-    "q": "torch.transpose(t,0,1)的主要目的為何?",
-    "o": {
-      "A": "把張量內容排序",
-      "B": "交換指定兩個維度的順序",
-      "C": "把張量轉成 Python list",
-      "D": "把張量資料型別改成 float"
-    }
-  },
-  {
-    "id": 5,
-    "a": "D",
-    "q": "下列何者最能描述「張量的shape」?",
-    "o": {
-      "A": "張量的資料型別",
-      "B": "張量的裝置位置",
-      "C": "張量的梯度是否追蹤",
-      "D": "張量各維度的大小組合"
-    }
-  },
-  {
-    "id": 6,
-    "a": "C",
-    "q": "下列何者最符合「dtype」在張量中的意義?",
-    "o": {
-      "A": "張量的維度數量",
-      "B": "張量的形狀(shape)",
-      "C": "張量元素的資料型別(如float32、int64)",
-      "D": "張量所在的裝置(CPU/GPU)"
-    }
-  },
-  {
-    "id": 7,
-    "a": "A",
-    "q": "在PyTorch 資料管線中,Dataset 與DataLoader的典型分工為何?",
-    "o": {
-      "A": "Dataset 定義取樣邏輯;DataLoader 負責批次化、打散與迭代",
-      "B": "Dataset 負責反向傳播;DataLoader 負責forward",
-      "C": "Dataset 只能讀 CSV; DataLoader 只能讀影像",
-      "D": "兩者功能完全相同"
-    }
-  },
-  {
-    "id": 8,
-    "a": "D",
-    "q": "DataLoader(..., shuffle=True)的主要影響是?",
-    "o": {
-      "A": "會自動做標準化",
-      "B": "會自動做資料增強",
-      "C": "會自動把資料搬到GPU",
-      "D": "每個 epoch 以隨機順序取樣資料"
-    }
-  },
-  {
-    "id": 9,
-    "a": "B",
-    "q": "DataLoader 的batch size 主要控制什麼?",
-    "o": {
-      "A": "每次更新學習率的幅度",
-      "B": "每次迭代同時送入模型的樣本數",
-      "C": "模型參數的總數量",
-      "D": "損失函數的種類"
-    }
-  },
-  {
-    "id": 10,
-    "a": "C",
-    "q": "drop_last=True 在DataLoader 中最常用於避免什麼情況?",
-    "o": {
-      "A": "資料被打亂",
-      "B": "資料被標準化",
-      "C": "最後一個batch 尺寸較小造成形狀不一致",
-      "D": "資料型別不一致"
-    }
-  },
-  {
-    "id": 11,
-    "a": "D",
-    "q": "在影像資料處理中,transforms.Compose([...])的主要用途是?",
-    "o": {
-      "A": "把多個loss 相加",
-      "B": "把多個 optimizer串接",
-      "C": "把多個GPU 串接",
-      "D": "串接多個影像前處理/轉換步驟"
-    }
-  },
-  {
-    "id": 12,
-    "a": "B",
-    "q": "在常見流程中,transforms.ToTensor()通常扮演什麼角色?",
-    "o": {
-      "A": "把Tensor 轉成 PIL Image",
-      "B": "把影像轉成 Tensor 並調整數值尺度(常見為0~1)",
-      "C": "把標籤轉成 one-hot",
-      "D": "把資料搬到GPU"
-    }
-  },
-  {
-    "id": 13,
-    "a": "A",
-    "q": "對於大多數監督式學習,為何常見要在訓練集上做標準化(z-score)?",
-    "o": {
-      "A": "讓特徵尺度一致,利於梯度下降與收斂",
-      "B": "讓模型參數變少",
-      "C": "避免需要驗證集",
-      "D": "保證不會 overfitting"
-    }
-  },
-  {
-    "id": 14,
-    "a": "B",
-    "q": "PyTorch requires_grad=True 的主要意義是?",
-    "o": {
-      "A": "該張量必定在GPU上",
-      "B": "自動追蹤運算以便計算梯度",
-      "C": "自動把張量轉成整數",
-      "D": "自動做正則化"
-    }
-  },
-  {
-    "id": 15,
-    "a": "C",
-    "q": "在自寫訓練迴圈時,為何要在更新參數後將梯度清零(例如 optimizer.zero_grad()) ?",
-    "o": {
-      "A": "因為梯度會自動消失",
-      "B": "因為梯度會自動變成0",
-      "C": "因為PyTorch 會累加梯度,需避免跨 batch累加",
-      "D": "因為不清零會導致資料被打亂"
-    }
-  },
-  {
-    "id": 16,
-    "a": "A",
-    "q": "在反向傳播中,loss.backward()的作用是?",
-    "o": {
-      "A": "計算並累積各參數的梯度",
-      "B": "更新參數",
-      "C": "切換模型到 eval模式",
-      "D": "把 loss 存到硬碟"
-    }
-  },
-  {
-    "id": 17,
-    "a": "D",
-    "q": "optimizer.step()的典型作用是?",
-    "o": {
-      "A": "建立資料集",
-      "B": "計算損失",
-      "C": "計算梯度",
-      "D": "依梯度更新參數"
-    }
-  },
-  {
-    "id": 18,
-    "a": "C",
-    "q": "均方誤差(MSE)作為損失函數,最常對應下列哪一類任務?",
-    "o": {
-      "A": "多類別分類",
-      "B": "二元分類",
-      "C": "回歸(regression)",
-      "D": "排序(ranking)"
-    }
-  },
-  {
-    "id": 19,
-    "a": "A",
-    "q": "CrossEntropyLoss 在多類別分類中通常期望模型輸出什麼?",
-    "o": {
-      "A": "未經 softmax的logits(由loss 內部處理)",
-      "B": "必須先做 one-hot 編碼後的輸出",
-      "C": "必須先做 sigmoid 後的輸出",
-      "D": "必須先四捨五入後的輸出"
-    }
-  },
-  {
-    "id": 20,
-    "a": "B",
-    "q": "SGD 與 Adam 兩者的主要差異之一為何?",
-    "o": {
-      "A": "SGD 不能用於神經網路",
-      "B": "Adam 會使用動量/自適應學習率的概念(每參數調整)",
-      "C": "Adam 不需要梯度",
-      "D": "SGD 一定比 Adam 收斂快"
-    }
-  },
-  {
-    "id": 21,
-    "a": "A",
-    "q": "為何mini-batch 訓練常比 full-batch更常見?",
-    "o": {
-      "A": "在記憶體與計算效率間折衷,且梯度帶雜訊可助逃離局部區域",
-      "B": "因為full-batch不能計算梯度",
-      "C": "因為mini-batch不需要loss",
-      "D": "因為mini-batch一定不會 overfitting"
-    }
-  },
-  {
-    "id": 22,
-    "a": "D",
-    "q": "模型在測試/推論時常會使用 torch.no_grad()的原因是?",
-    "o": {
-      "A": "避免資料前處理",
-      "B": "避免類別不平衡",
-      "C": "避免影像縮放",
-      "D": "減少記憶體與計算開銷(不需要梯度)"
-    }
-  },
-  {
-    "id": 23,
-    "a": "B",
-    "q": "Logistic(sigmoid) 函數輸出的典型範圍為?",
-    "o": {
-      "A": "(-∞,+∞)",
-      "B": "(0, 1)",
-      "C": "(-1, 1)",
-      "D": "[0, +∞)"
-    }
-  },
-  {
-    "id": 24,
-    "a": "C",
-    "q": "在二元分類中,sigmoid 輸出最常被解釋為?",
-    "o": {
-      "A": "某個特徵的z-score",
-      "B": "loss的大小",
-      "C": "正類(class=1)的機率估計",
-      "D": "梯度的方向"
-    }
-  },
-  {
-    "id": 25,
-    "a": "A",
-    "q": "softmax 在多類別分類中最重要的性質是?",
-    "o": {
-      "A": "輸出各類別機率且總和為1",
-      "B": "輸出一定為0或1",
-      "C": "輸出允許負數且總和為0",
-      "D": "輸出範圍為(-1,1)且總和為1"
-    }
-  },
-  {
-    "id": 26,
-    "a": "D",
-    "q": "若 logits 全部同時加上一個常數k,softmax 的輸出會如何?",
-    "o": {
-      "A": "全部變成0.5",
-      "B": "全部變成0",
-      "C": "順序會顛倒",
-      "D": "不變(因為softmax 對平移不變)"
-    }
-  },
-  {
-    "id": 27,
-    "a": "B",
-    "q": "tanh的輸出範圍為?",
-    "o": {
-      "A": "(0,1)",
-      "B": "(-1, 1)",
-      "C": "(-0, +∞)",
-      "D": "[0, +∞)"
-    }
-  },
-  {
-    "id": 28,
-    "a": "A",
-    "q": "ReLU(x)的定義最接近哪一個?",
-    "o": {
-      "A": "max(0, x)",
-      "B": "min(0, x)",
-      "C": "1/(1+e^{-x})",
-      "D": "tanh(x)"
-    }
-  },
-  {
-    "id": 29,
-    "a": "D",
-    "q": "ReLU 在實務上常見的好處是?",
-    "o": {
-      "A": "輸出一定介於0與1",
-      "B": "可直接提供機率",
-      "C": "一定避免overfitting",
-      "D": "計算簡單且能緩解部分梯度飽和問題"
-    }
-  },
-  {
-    "id": 30,
-    "a": "C",
-    "q": "「梯度消失(vanishing gradients)」在深層網路中常與哪類活化函數更相關?",
-    "o": {
-      "A": "ReLU",
-      "B": "Leaky ReLU",
-      "C": "sigmoid/tanh 在飽和區域",
-      "D": "max pooling"
-    }
-  },
-  {
-    "id": 31,
-    "a": "B",
-    "q": "在多類別分類中,若使用 CrossEntropyLoss,通常不需要在模型最後一層手動加 softmax的原因是?",
-    "o": {
-      "A": "softmax不能用於多類別",
-      "B": "loss 內部會對 logits 做 log-softmax 等處理以提高數值穩定性",
-      "C": "softmax 會讓梯度變成0",
-      "D": "softmax只能用於回歸"
-    }
-  },
-  {
-    "id": 32,
-    "a": "D",
-    "q": "在分類問題的基本評估中,若模型輸出為各類別機率,最常用什麼取得預測類別?",
-    "o": {
-      "A": "sum",
-      "B": "mean",
-      "C": "min",
-      "D": "argmax"
-    }
-  },
-  {
-    "id": 33,
-    "a": "B",
-    "q": "在train_test_split 中設定 random_state的主要目的為?",
-    "o": {
-      "A": "讓資料自動標準化",
-      "B": "讓切分可重現",
-      "C": "讓測試集變大",
-      "D": "讓模型自動調參"
-    }
-  },
-  {
-    "id": 34,
-    "a": "A",
-    "q": "若資料前處理(如標準化)在train 與test 使用了「不同的均值/標準差」來各自計算,最可能造成什麼問題?",
-    "o": {
-      "A": "資料洩漏/分佈不一致,評估偏差",
-      "B": "會讓模型參數變少",
-      "C": "會讓資料自動平衡",
-      "D": "不會有任何影響"
-    }
-  },
-  {
-    "id": 35,
-    "a": "C",
-    "q": "在回歸示例中,對輸入x做標準化後再訓練線性模型,最直接的好處通常是?",
-    "o": {
-      "A": "保證R^2=1",
-      "B": "保證 loss=0",
-      "C": "改善數值尺度與收斂穩定性",
-      "D": "讓模型不需要 bias"
-    }
-  },
-  {
-    "id": 36,
-    "a": "D",
-    "q": "在DataLoader中,若batch size 太大,最常見的實務風險是?",
-    "o": {
-      "A": "資料無法打亂",
-      "B": "loss無法計算",
-      "C": "梯度無法回傳",
-      "D": "顯存/記憶體不足或每步更新變慢"
-    }
-  },
-  {
-    "id": 37,
-    "a": "B",
-    "q": "在PyTorch中,若b是numpy.ndarray,下列哪個方式會「共享同一塊記憶體」(修改tensor 可能影響原 numpy陣列)?",
-    "o": {
-      "A": "torch.tensor(b)",
-      "B": "torch.from_numpy(b)",
-      "C": "torch.ones_like(b)",
-      "D": "torch.randn(b.shape)"
-    }
-  },
-  {
-    "id": 38,
-    "a": "C",
-    "q": "下列哪一個函式可建立形狀為(2,3)的全1張量?",
-    "o": {
-      "A": "torch.zeros(2,3)",
-      "B": "torch.rand(2,3)",
-      "C": "torch.ones(2,3)",
-      "D": "torch.arange(2,3)"
-    }
-  },
-  {
-    "id": 39,
-    "a": "D",
-    "q": "torch.rand(2,3)產生的元素值範圍通常是?",
-    "o": {
-      "A": "[-1,1)",
-      "B": "[0,255]",
-      "C": "任意實數",
-      "D": "[0,1)"
-    }
-  },
-  {
-    "id": 40,
-    "a": "C",
-    "q": "若t的shape為(3,5),執行 torch.transpose(t, 0,1)後 shape 會變成?",
-    "o": {
-      "A": "(3,5)",
-      "B": "(5,5)",
-      "C": "(5,3)",
-      "D": "(1,15)"
-    }
-  },
-  {
-    "id": 41,
-    "a": "A",
-    "q": "若t= torch.zeros(30),執行t.reshape(5,6)後 shape為?",
-    "o": {
-      "A": "(5,6)",
-      "B": "(6,5)",
-      "C": "(30,1)",
-      "D": "無法reshape,會報錯"
-    }
-  },
-  {
-    "id": 42,
-    "a": "D",
-    "q": "若t的shape為(1,2,1,4,1),執行 torch.squeeze(t, 2)後 shape 最可能為?",
-    "o": {
-      "A": "(2,4)",
-      "B": "(1,2,4)",
-      "C": "(1,2,1,4)",
-      "D": "(1,2,4,1)"
-    }
-  },
-  {
-    "id": 43,
-    "a": "B",
-    "q": "設tl shape=(5,2),t2 shape=(5,2)。下列哪個運算能做逐元素相乘?",
-    "o": {
-      "A": "torch.matmul(t1, t2)",
-      "B": "torch.multiply(t1, t2)",
-      "C": "t1 @t2",
-      "D": "torch.cat([t1,t2], dim=0)"
-    }
-  },
-  {
-    "id": 44,
-    "a": "C",
-    "q": "NumPy產生0到9 (共10個元素)的陣列,且dtype 為float32,最符合的是?",
-    "o": {
-      "A": "np.linspace(0, 9, 10, dtype='float32')",
-      "B": "np.arange(0, 9, dtype='float32')",
-      "C": "np.arange(10, dtype='float32')",
-      "D": "np.arange(1, 10, dtype='float32')"
-    }
-  },
-  {
-    "id": 45,
-    "a": "B",
-    "q": "若X_train是NumPyarray,標準化常見寫法(X_train-mean)/std。下列何者是計算 mean的正確方式?",
-    "o": {
-      "A": "np.mean(X_train, dim=0)",
-      "B": "np.mean(X_train)",
-      "C": "np.avg(X_train, axis='all')",
-      "D": "X_train.mean(dim=0)"
-    }
-  },
-  {
-    "id": 46,
-    "a": "D",
-    "q": "Matplotlib中,建立1列2欄的子圖,通常會用?",
-    "o": {
-      "A": "plt.subplot(1,2)",
-      "B": "plt.subplots(1)",
-      "C": "plt.figure(1,2)",
-      "D": "fig.add_subplot(1, 2, 1) / fig.add_subplot(1, 2, 2)"
-    }
-  },
-  {
-    "id": 47,
-    "a": "A",
-    "q": "Matplotlib 中要設定 x 軸標籤,最常用的函式是?",
-    "o": {
-      "A": "plt.xlabel('x')",
-      "B": "plt.xaxis('x')",
-      "C": "plt.set_xlabel('x')",
-      "D": "ax.xlabel('x')"
-    }
-  },
-  {
-    "id": 48,
-    "a": "C",
-    "q": "Pandas 中依「列標籤」與「欄標籤」選取資料,最常用的是?",
-    "o": {
-      "A": "df.iloc[...]",
-      "B": "df.iat[...]",
-      "C": "df.loc[...]",
-      "D": "df.values[...]"
-    }
-  },
-  {
-    "id": 49,
-    "a": "B",
-    "q": "Pandas 中依「整數位置」選取第0到第4列(不含第5列),最符合的是?",
-    "o": {
-      "A": "df.loc[0:5]",
-      "B": "df.iloc[0:5]",
-      "C": "df.iloc[0:4]",
-      "D": "df.loc[0:4]"
-    }
-  },
-  {
-    "id": 50,
-    "a": "D",
-    "q": "Pandas 讀取 CSV 檔案最常用的函式是?",
-    "o": {
-      "A": "pd.load_csv('data.csv')",
-      "B": "pd.read_table('data.csv')",
-      "C": "pd.open('data.csv')",
-      "D": "pd.read_csv('data.csv')"
-    }
-  },
-  {
-    "id": 51,
-    "a": "A",
-    "q": "若要將 DataFrame df 轉為 NumPy array(不保留索引/欄名),常見寫法是?",
-    "o": {
-      "A": "df.to_numpy()",
-      "B": "df.to_array()",
-      "C": "np.asarray(df, keep_index=False)",
-      "D": "df.numpy()"
-    }
-  },
-  {
-    "id": 52,
-    "a": "C",
-    "q": "在機器學習中,將資料分成訓練集/測試集的主要目的最貼近?",
-    "o": {
-      "A": "讓訓練更快",
-      "B": "讓模型參數更少",
-      "C": "評估泛化能力(generalization)",
-      "D": "避免使用標籤資料"
-    }
-  },
-  {
-    "id": 53,
-    "a": "B",
-    "q": "標準化(standardization)與正規化(normalization)差異,下列敘述何者正確?",
-    "o": {
-      "A": "兩者完全相同",
-      "B": "標準化通常以(x-mean)/std;正規化常把值縮放到固定區間(如0~1)",
-      "C": "正規化一定會讓 mean=0",
-      "D": "標準化一定會讓值落在0~1"
-    }
-  },
-  {
-    "id": 54,
-    "a": "A",
-    "q": "已知A=torch.ones(3),B=torch.zeros(2)。C=torch.cat([A,B], dim=0)後,C的shape最可能是?",
-    "o": {
-      "A": "(5,)",
-      "B": "(3,2)",
-      "C": "(2,3)",
-      "D": "(3,)"
-    }
-  },
-  {
-    "id": 55,
-    "a": "B",
-    "q": "以 DataLoader(t, batch_size=3, drop_last=False)迭代長度為6的一維 tensort,batch 數量最可能是?",
-    "o": {
-      "A": "1",
-      "B": "2",
-      "C": "3",
-      "D": "6"
-    }
-  },
-  {
-    "id": 56,
-    "a": "C",
-    "q": "DataLoader 的shuffle=True 主要用途是?",
-    "o": {
-      "A": "把每個 batch 內部排序",
-      "B": "固定每次 epoch 取相同順序",
-      "C": "每個epoch打亂資料順序以減少順序偏差",
-      "D": "把資料轉成隨機雜訊"
-    }
-  },
-  {
-    "id": 57,
-    "a": "B",
-    "q": "在 torchvision.datasets.MNIST(image_path, 'train', download=True)中,download=True的主要作用是?",
-    "o": {
-      "A": "只下載標籤,不下載圖片",
-      "B": "若本地沒有資料集,會自動下載到指定路徑",
-      "C": "強制每次都重新下載並覆蓋",
-      "D": "把資料集上傳到雲端"
-    }
-  },
-  {
-    "id": 58,
-    "a": "C",
-    "q": "PyTorch 中將 NumPy array 轉成 tensor 並確保為float32,較常見的作法是?",
-    "o": {
-      "A": "torch.tensor(x).double()",
-      "B": "torch.from_numpy(x).half()",
-      "C": "torch.from_numpy(x).float()",
-      "D": "torch.from_numpy(x).int()"
-    }
-  },
-  {
-    "id": 59,
-    "a": "C",
-    "q": "在手寫梯度更新(不用optimizer)時,為避免把更新動作也記錄到計算圖,常使用?",
-    "o": {
-      "A": "torch.enable_grad()",
-      "B": "model.train()",
-      "C": "with torch.no_grad():",
-      "D": "with torch.inference_mode(False):"
-    }
-  },
-  {
-    "id": 60,
-    "a": "B",
-    "q": "在PyTorch 迴圈訓練中,loss.backward()的主要功能是?",
-    "o": {
-      "A": "更新參數值",
-      "B": "計算並累積參數的梯度到.grad",
-      "C": "把資料移到GPU",
-      "D": "把loss 轉成 numpy"
-    }
-  },
-  {
-    "id": 61,
-    "a": "D",
-    "q": "使用 torch.optim.SGD(...)時,更新參數通常由哪個方法完成?",
-    "o": {
-      "A": "optimizer.backward()",
-      "B": "optimizer.update()",
-      "C": "optimizer.fit()",
-      "D": "optimizer.step()"
-    }
-  },
-  {
-    "id": 62,
-    "a": "A",
-    "q": "使用 optimizer 進行更新時,為避免梯度在多次迭代中累積,通常會呼叫?",
-    "o": {
-      "A": "optimizer.zero_grad()",
-      "B": "optimizer.reset()",
-      "C": "loss.zero_()",
-      "D": "model.zero_param()"
-    }
-  },
-  {
-    "id": 63,
-    "a": "C",
-    "q": "nn.MSELoss(reduction='mean')的 reduction='mean'代表?",
-    "o": {
-      "A": "回傳每筆樣本的loss 向量",
-      "B": "回傳loss的最大值",
-      "C": "回傳所有元素 loss 的平均",
-      "D": "回傳所有元素 loss 的總和"
-    }
-  },
-  {
-    "id": 64,
-    "a": "B",
-    "q": "nn.Linear(input_size, output_size)的weight 參數形狀一般是?",
-    "o": {
-      "A": "(input_size, output_size)",
-      "B": "(output_size, input_size)",
-      "C": "(output_size,)",
-      "D": "(input_size,)"
-    }
-  },
-  {
-    "id": 65,
-    "a": "D",
-    "q": "針對多分類(例如Iris的3類)使用nn.CrossEntropyLoss()時,target y 的典型格式是?",
-    "o": {
-      "A": "每列 one-hot向量",
-      "B": "float 機率分佈",
-      "C": "字串類別名稱",
-      "D": "整數類別索引(0..C-1)"
-    }
-  },
-  {
-    "id": 66,
-    "a": "A",
-    "q": "程式中 is_correct = (torch.argmax(pred, dim=1) == y_batch).float()的主要用途是?",
-    "o": {
-      "A": "計算每筆是否分類正確,方便累計 accuracy",
-      "B": "計算loss",
-      "C": "產生softmax 機率",
-      "D": "把 pred轉成 one-hot"
-    }
-  },
-  {
-    "id": 67,
-    "a": "B",
-    "q": "下列何者最能描述 torch.save(model.state_dict(), path)的儲存內容?",
-    "o": {
-      "A": "完整 Python 物件(包含模型架構與方法)",
-      "B": "模型參數張量的字典(參數值)",
-      "C": "訓練資料集",
-      "D": "Optimizer的梯度歷史"
-    }
-  },
-  {
-    "id": 68,
-    "a": "D",
-    "q": "torch.save(model, path) 與 torch.save(model.state_dict(), path)的差異,下列何者正確?",
-    "o": {
-      "A": "兩者都只存權重",
-      "B": "state_dict 會存 optimizer 狀態",
-      "C": "torch.save(model)只能存到 GPU",
-      "D": "torch.save(model)會序列化整個模型物件;state_dict 只存參數"
-    }
-  },
-  {
-    "id": 69,
-    "a": "A",
-    "q": "softmax 的關鍵性質之一是:輸出向量元素之和為?",
-    "o": {
-      "A": "1",
-      "B": "0",
-      "C": "與輸入z的和相同",
-      "D": "與類別數相同"
-    }
-  },
-  {
-    "id": 70,
-    "a": "B",
-    "q": "Logistic (sigmoid) 函數輸出範圍為?",
-    "o": {
-      "A": "(-∞,∞)",
-      "B": "(0, 1)",
-      "C": "[-1, 1]",
-      "D": "[0, ∞)"
-    }
-  },
-  {
-    "id": 71,
-    "a": "A",
-    "q": "tanh 函數輸出範圍為?",
-    "o": {
-      "A": "(-1,1)",
-      "B": "(0, 1)",
-      "C": "[0, 2)",
-      "D": "(-∞, )"
-    }
-  },
-  {
-    "id": 72,
-    "a": "D",
-    "q": "ReLU 的定義最貼近?",
-    "o": {
-      "A": "$max(0,1-z)$",
-      "B": "$1/(1+exp(-z))$",
-      "C": "$(exp(z)-exp(-z))/(exp(z)+exp(-z))$",
-      "D": "$max(0, z)$"
-    }
-  },
-  {
-    "id": 73,
-    "a": "C",
-    "q": "在多分類模型中,若已使用 nn.CrossEntropyLoss(),通常建議模型最後一層輸出為?",
-    "o": {
-      "A": "已做 softmax 的機率",
-      "B": "已做 sigmoid 的機率",
-      "C": "未經 softmax的logits(由loss 內部處理)",
-      "D": "已做 tanh 的值"
-    }
-  },
-  {
-    "id": 74,
-    "a": "A",
-    "q": "在訓練時,若想固定隨機初始化結果以利重現,通常會呼叫?",
-    "o": {
-      "A": "torch.manual_seed(1)",
-      "B": "torch.randomize(1)",
-      "C": "np.freeze_seed(1)",
-      "D": "random.lock(1)"
-    }
-  },
-  {
-    "id": 75,
-    "a": "D",
-    "q": "使用sklearn.model_selection.train_test_split(X, y, test_size=1./3, random_state=1)時, random_state的主要目的為?",
-    "o": {
-      "A": "讓測試集比例自動調整",
-      "B": "指定每筆資料的權重",
-      "C": "決定 loss 函數",
-      "D": "固定切分的隨機性以利重現"
-    }
-  },
-  {
-    "id": 76,
-    "a": "B",
-    "q": "在深度學習框架中,「計算圖(computation graph)」最核心的用途是什麼?",
-    "o": {
-      "A": "僅用於將資料存成檔案",
-      "B": "描述運算的依賴關係以便進行自動微分與反向傳播",
-      "C": "用來加速硬碟讀寫",
-      "D": "用來把模型轉成 SQL"
-    }
-  },
-  {
-    "id": 77,
-    "a": "C",
-    "q": "PyTorch的「動態計算圖」特性最貼近下列哪個敘述?",
-    "o": {
-      "A": "模型結構必須先編譯固定,執行時不可改變",
-      "B": "每次 forward 都必須走相同路徑",
-      "C": "計算圖在執行時建立,可配合 Python 控制流程改變",
-      "D": "只能用於推論,不能用於訓練"
-    }
-  },
-  {
-    "id": 78,
-    "a": "D",
-    "q": "在autograd 中,當輸出是一個「標量loss」時,loss對參數向量 w的梯度在概念上相當於?",
-    "o": {
-      "A": "loss的最大值",
-      "B": "w的平均值",
-      "C": "loss的Hessian",
-      "D": "各參數偏微分組成的向量"
-    }
-  },
-  {
-    "id": 79,
-    "a": "B",
-    "q": "在PyTorch中,requires_grad=True的意義最準確的是?",
-    "o": {
-      "A": "張量必須在GPU上",
-      "B": "追蹤張量的運算以便之後計算梯度",
-      "C": "張量不可被修改",
-      "D": "張量一定是浮點數"
-    }
-  },
-  {
-    "id": 80,
-    "a": "A",
-    "q": "在訓練迴圈中,為何常見要呼叫 optimizer.zero_grad()(或手動將 grad 清零)?",
-    "o": {
-      "A": "PyTorch 會累加梯度,需避免跨 batch 意外累積",
-      "B": "因為梯度每步都會自動歸零",
-      "C": "因為這會自動做資料增強",
-      "D": "因為這會自動切換到 eval 模式"
-    }
-  },
-  {
-    "id": 81,
-    "a": "D",
-    "q": "下列哪一項最合理地解釋「梯度累加」在某些情境下反而是有意為之?",
-    "o": {
-      "A": "為了讓loss變成常數",
-      "B": "為了讓模型不需要 bias",
-      "C": "為了讓DataLoader 自動加速",
-      "D": "用多個小 batch 累積成等效的大 batch (gradient accumulation)"
-    }
-  },
-  {
-    "id": 82,
-    "a": "B",
-    "q": "torch.no_grad()最常用於哪個目的?",
-    "o": {
-      "A": "強制計算二階導數",
-      "B": "在推論或參數更新步驟中停用梯度追蹤以節省資源",
-      "C": "自動把資料搬到GPU",
-      "D": "自動做標準化"
-    }
-  },
-  {
-    "id": 83,
-    "a": "A",
-    "q": "若希望「某段運算不參與梯度計算」,最常見且語意清楚的作法是?",
-    "o": {
-      "A": "用 torch.no_grad() 包住該段運算",
-      "B": "把 learning rate 設為0",
-      "C": "把 batch_size 設為1",
-      "D": "把loss 設為0"
-    }
-  },
-  {
-    "id": 84,
-    "a": "D",
-    "q": "反向傳播(backpropagation)在概念上主要依賴什麼數學工具?",
-    "o": {
-      "A": "傅立葉轉換",
-      "B": "貝氏定理",
-      "C": "特徵值分解",
-      "D": "鏈式法則(chain rule)"
-    }
-  },
-  {
-    "id": 85,
-    "a": "B",
-    "q": "下列何者最能描述 state_dict()?",
-    "o": {
-      "A": "完整儲存 Python 類別定義",
-      "B": "以鍵值對保存模型參數/緩衝(如BatchNorm 的running stats)",
-      "C": "只保存 optimizer 的設定",
-      "D": "只保存訓練資料索引"
-    }
-  },
-  {
-    "id": 86,
-    "a": "B",
-    "q": "XOR 類型資料通常需要多層感知器(含非線性)才能良好分類,最根本原因是?",
-    "o": {
-      "A": "XOR 資料樣本太少",
-      "B": "XOR 在原始特徵空間中非線性可分",
-      "C": "XOR一定要用卷積網路",
-      "D": "XOR只能用回歸解"
-    }
-  },
-  {
-    "id": 87,
-    "a": "D",
-    "q": "對二元分類輸出而言,sigmoid的理論角色最常被解釋為?",
-    "o": {
-      "A": "把輸出限制在(-1,1)",
-      "B": "把輸出變成整數",
-      "C": "把輸出變成 one-hot",
-      "D": "將 logit 映射到(0,1)以近似機率"
-    }
-  },
-  {
-    "id": 88,
-    "a": "A",
-    "q": "在二元分類中,使用BCE (binary cross-entropy)損失時,常見的輸出與標籤配對是?",
-    "o": {
-      "A": "輸出為機率(或logits 搭配對應loss),標籤為0/1",
-      "B": "輸出為10維向量,標籤為one-hot",
-      "C": "輸出為任意實數,標籤為連續值",
-      "D": "輸出為類別索引,標籤為浮點數"
-    }
-  },
-  {
-    "id": 89,
-    "a": "C",
-    "q": "多類別分類中,CrossEntropyLoss 通常希望模型輸出是什麼?",
-    "o": {
-      "A": "已做softmax的機率",
-      "B": "已做 sigmoid 的機率",
-      "C": "未做softmax的logits(數值更穩定)",
-      "D": "已做 argmax 的整數類別"
-    }
-  },
-  {
-    "id": 90,
-    "a": "B",
-    "q": "softmax 的一個重要數值性質是:若所有 logits 同時加上常數k,softmax 輸出會?",
-    "o": {
-      "A": "全部變成0",
-      "B": "保持不變(平移不變性)",
-      "C": "順序顛倒",
-      "D": "全部變成1/C"
-    }
-  },
-  {
-    "id": 91,
-    "a": "A",
-    "q": "回歸任務中常用 MSE的一個理論動機是?",
-    "o": {
-      "A": "在高斯雜訊假設下,最小化MSE 對應最大概似估計",
-      "B": "能直接產生類別機率",
-      "C": "可保證分類邊界最大化",
-      "D": "能自動處理類別不平衡"
-    }
-  },
-  {
-    "id": 92,
-    "a": "C",
-    "q": "為何特徵標準化(z-score)常能讓梯度下降更穩定?",
-    "o": {
-      "A": "因為會減少訓練資料量",
-      "B": "因為會增加參數數量",
-      "C": "因為讓不同特徵尺度相近,改善損失地形與步長選擇",
-      "D": "因為會把非線性問題變線性"
-    }
-  },
-  {
-    "id": 93,
-    "a": "B",
-    "q": "在train/test 切分後,為何應只用「訓練集」估計標準化所需的mean/std?",
-    "o": {
-      "A": "因為測試集不可包含任何NaN",
-      "B": "避免資料洩漏並維持公平評估",
-      "C": "因為測試集一定更小",
-      "D": "因為這會讓測試準確率變 100%"
-    }
-  },
-  {
-    "id": 94,
-    "a": "A",
-    "q": "將類別特徵做 one-hot 編碼的主要理論目的為?",
-    "o": {
-      "A": "避免引入不存在的大小順序,讓模型能以線性方式使用類別資訊",
-      "B": "讓資料變成連續值",
-      "C": "讓模型參數變成0",
-      "D": "讓資料自動去雜訊"
-    }
-  },
-  {
-    "id": 95,
-    "a": "C",
-    "q": "將「有自然順序」的類別(如年份區間)做分桶(bucketize)的常見理論理由是?",
-    "o": {
-      "A": "把資料變成更高維",
-      "B": "避免任何資訊流失",
-      "C": "以可控方式離散化,降低雜訊/非線性並讓模型更易學習",
-      "D": "保證不需要標準化"
-    }
-  },
-  {
-    "id": 96,
-    "a": "B",
-    "q": "對於回歸模型,最後一層通常不加活化函數(identity)的一個原因是?",
-    "o": {
-      "A": "避免輸出變成負數",
-      "B": "回歸目標可在任意實數範圍,限制輸出會降低表達力",
-      "C": "因為ReLU 不能用於回歸",
-      "D": "因為sigmoid 會讓 loss變0"
-    }
-  },
-  {
-    "id": 97,
-    "a": "D",
-    "q": "對於分類模型,最後一層輸出類別數C的logits,其理論意義最接近?",
-    "o": {
-      "A": "每個類別的像素值",
-      "B": "每個類別的梯度",
-      "C": "每個類別的權重個數",
-      "D": "每個類別的未正規化分數(可轉成機率)"
-    }
-  },
-  {
-    "id": 98,
-    "a": "A",
-    "q": "在MNIST 影像分類中先 Flatten的主要理由是?",
-    "o": {
-      "A": "把2D影像展平成 ID向量以供全連接層使用",
-      "B": "把資料變成 one-hot",
-      "C": "把資料轉成標籤",
-      "D": "把資料做 PCA"
-    }
-  },
-  {
-    "id": 99,
-    "a": "B",
-    "q": "將影像像素從0-255 縮放到0-1的理論好處最貼近?",
-    "o": {
-      "A": "讓資料變成離散",
-      "B": "調整數值尺度、讓最佳化更穩定",
-      "C": "保證準確率上升",
-      "D": "避免需要正則化"
-    }
-  },
-  {
-    "id": 100,
-    "a": "D",
-    "q": "Dropout 在理論上最常被視為哪一類正則化概念?",
-    "o": {
-      "A": "資料清洗",
-      "B": "特徵縮放",
-      "C": "超參數搜尋",
-      "D": "隨機子網路集成(model averaging 的近似)以降低過擬合"
-    }
-  },
-  {
-    "id": 101,
-    "a": "A",
-    "q": "訓練時注入隨機雜訊(例如在層輸入加 noise)常被用來達到什麼效果?",
-    "o": {
-      "A": "正則化與提升強健性(對小擾動不敏感)",
-      "B": "保證 loss變成0",
-      "C": "讓資料自動平衡",
-      "D": "讓模型自動變小"
-    }
-  },
-  {
-    "id": 102,
-    "a": "B",
-    "q": "權重初始化(如Xavier/Glorot)在理論上主要想改善什麼問題?",
-    "o": {
-      "A": "讓資料不需要標準化",
-      "B": "避免訊號/梯度在深層網路中爆炸或消失,促進穩定訓練",
-      "C": "讓模型一定不會overfit",
-      "D": "讓訓練不需要 optimizer"
-    }
-  },
-  {
-    "id": 103,
-    "a": "C",
-    "q": "「梯度消失」對sigmoid/tanh 特別常見的原因之一是?",
-    "o": {
-      "A": "它們在所有區域梯度都很大",
-      "B": "它們輸出是離散的",
-      "C": "在飽和區域導數接近0,深層連乘後更小",
-      "D": "它們一定造成梯度爆炸"
-    }
-  },
-  {
-    "id": 104,
-    "a": "D",
-    "q": "ReLU 常被用於深層網路的一個理論理由是?",
-    "o": {
-      "A": "輸出總和為1",
-      "B": "輸出必為負",
-      "C": "能直接提供機率",
-      "D": "非飽和區域梯度較不易趨近0,且計算簡單"
-    }
-  },
-  {
-    "id": 105,
-    "a": "A",
-    "q": "mini-batch 訓練相較 full-batch的常見理論折衷是?",
-    "o": {
-      "A": "每步梯度有雜訊但更省記憶體,且常有助泛化/逃離某些局部區域",
-      "B": "一定更慢",
-      "C": "一定更準",
-      "D": "不需要學習率"
-    }
-  },
-  {
-    "id": 106,
-    "a": "D",
-    "q": "accuracy 作為分類評估指標的主要限制之一是?",
-    "o": {
-      "A": "只能用於回歸",
-      "B": "不需要標籤",
-      "C": "一定比F1差",
-      "D": "在類別不平衡時可能具有誤導性"
-    }
-  },
-  {
-    "id": 107,
-    "a": "A",
-    "q": "在二元分類中使用0.5 當作決策閾值,其理論前提最接近?",
-    "o": {
-      "A": "正負類代價對稱且機率校準合理時是常見預設",
-      "B": "保證最佳F1",
-      "C": "保證最佳 recall",
-      "D": "保證沒有 false positive"
-    }
-  },
-  {
-    "id": 108,
-    "a": "B",
-    "q": "使用固定 random state/seed的主要目的為?",
-    "o": {
-      "A": "讓模型一定更準",
-      "B": "讓資料切分與隨機初始化可重現",
-      "C": "讓訓練速度變快",
-      "D": "避免需要驗證集"
-    }
-  },
-  {
-    "id": 109,
-    "a": "C",
-    "q": "為何在深度學習中常分開「訓練損失」與「驗證/測試表現」觀察?",
-    "o": {
-      "A": "因為訓練損失永遠不會下降",
-      "B": "因為驗證集可以用來更新權重",
-      "C": "用來監控泛化能力與過擬合(train好不代表 test好)",
-      "D": "因為測試集必須比訓練集大"
-    }
-  },
-  {
-    "id": 110,
-    "a": "D",
-    "q": "過擬合(overfitting)最典型的現象是?",
-    "o": {
-      "A": "訓練與測試都很差",
-      "B": "訓練與測試都很好",
-      "C": "訓練差但測試好",
-      "D": "訓練表現很好但測試表現變差"
-    }
-  },
-  {
-    "id": 111,
-    "a": "A",
-    "q": "「正則化(regularization)」的共同目標最貼近哪個?",
-    "o": {
-      "A": "限制模型有效自由度以改善泛化",
-      "B": "增加訓練資料量",
-      "C": "保證loss為0",
-      "D": "讓模型一定線性可分"
-    }
-  },
-  {
-    "id": 112,
-    "a": "B",
-    "q": "以 torch.nn 模組搭配 optimizer 的典型訓練步驟順序,何者正確?",
-    "o": {
-      "A": "step backward → zero_grad",
-      "B": "zero_grad → forward → loss → backward → step",
-      "C": "forward → step → backward → zero_grad",
-      "D": "backward → forward → loss → step"
-    }
-  },
-  {
-    "id": 113,
-    "a": "A",
-    "q": "為何在模型推論階段通常會同時使用 model.eval()與 torch.no_grad()?",
-    "o": {
-      "A": "前者切換層行為(如Dropout/BN),後者停用梯度追蹤以節省資源",
-      "B": "兩者等價,只要用其中一個",
-      "C": "兩者都會更新權重",
-      "D": "兩者都會讓輸出變成 one-hot"
-    }
-  },
-  {
-    "id": 114,
-    "a": "C",
-    "q": "compute_z(a,b,c) 中使用 torch.sub/torch.mul/torch.add的組合,最終計算的是?",
-    "o": {
-      "A": "(a+b)*2+c",
-      "B": "(a-b)/(2+c)",
-      "C": "(a-b)*2+c",
-      "D": "a*(b-c)*2"
-    }
-  },
-  {
-    "id": 115,
-    "a": "D",
-    "q": "若 compute_z 接收到 rank-2的輸入(例如[[1]]),輸出最合理的型態是?",
-    "o": {
-      "A": "Python int",
-      "B": "NumPy ndarray",
-      "C": "list",
-      "D": "torch.Tensor(同維度階數)"
-    }
-  },
-  {
-    "id": 116,
-    "a": "B",
-    "q": "torch.tensor(3.14, requires_grad=True)的requires_grad=True 代表什麼?",
-    "o": {
-      "A": "此張量會自動搬到GPU",
-      "B": "追蹤運算以便之後計算梯度",
-      "C": "此張量不可被修改",
-      "D": "此張量必須是整數"
-    }
-  },
-  {
-    "id": 117,
-    "a": "A",
-    "q": "w=torch.tensor([1.,2.,3.]); w.requires_grad_()這行的效果為何?",
-    "o": {
-      "A": "就地(in-place)將 requires_grad 設為True",
-      "B": "建立一個全新張量w2並回傳",
-      "C": "將w轉為numpy array",
-      "D": "清除W的梯度"
-    }
-  },
-  {
-    "id": 118,
-    "a": "C",
-    "q": "nn.init.xavier_normal_(w)的主要用途是?",
-    "o": {
-      "A": "把w全部設為0",
-      "B": "把w設為均勻分佈 0~1",
-      "C": "以 Xavier/Glorot 正態分佈初始化權重",
-      "D": "把w轉成稀疏矩陣"
-    }
-  },
-  {
-    "id": 119,
-    "a": "B",
-    "q": "在 autograd 範例中,loss.backward()執行後,w.grad 與b.grad 代表什麼?",
-    "o": {
-      "A": "w與b的目前值",
-      "B": "loss對w、b的偏微分(梯度)",
-      "C": "w與b的標準差",
-      "D": "w與b的學習率"
-    }
-  },
-  {
-    "id": 120,
-    "a": "D",
-    "q": "範例中 loss = (y-z).pow(2).sum() 最符合哪種損失?",
-    "o": {
-      "A": "交叉熵",
-      "B": "Hinge loss",
-      "C": "Huber loss",
-      "D": "平方誤差(MSE的一種形式)"
-    }
-  },
-  {
-    "id": 121,
-    "a": "A",
-    "q": "為何在自寫訓練迴圈中通常要呼叫 optimizer.zero_grad()?",
-    "o": {
-      "A": "因為PyTorch 會累加梯度,需避免跨 batch累積",
-      "B": "因為會自動打亂資料",
-      "C": "因為會自動做正則化",
-      "D": "因為會自動把模型設為eval"
-    }
-  },
-  {
-    "id": 122,
-    "a": "C",
-    "q": "下列哪一項最能描述nn.Sequential 的特性?",
-    "o": {
-      "A": "只能放 loss function",
-      "B": "只能放單一層",
-      "C": "依序串接多層模組,forward依序執行",
-      "D": "只能用於 CNN"
-    }
-  },
-  {
-    "id": 123,
-    "a": "B",
-    "q": "在XOR 範例中, $y[x[:,0]*x[:,1]<0]=0$ 這段邏輯對應什麼類型資料分佈?",
-    "o": {
-      "A": "線性可分",
-      "B": "類 XOR的非線性可分",
-      "C": "完全隨機不可學",
-      "D": "單峰高斯"
-    }
-  },
-  {
-    "id": 124,
-    "a": "D",
-    "q": "XOR 範例中使用nn.BCELoss(),模型最後一層通常需搭配什麼活化函數?",
-    "o": {
-      "A": "ReLU",
-      "B": "Softmax",
-      "C": "Tanh",
-      "D": "Sigmoid"
-    }
-  },
-  {
-    "id": 125,
-    "a": "A",
-    "q": "在XOR 訓練迴圈中 pred = model(x_batch)[:,0]的[:,0]主要目的為何?",
-    "o": {
-      "A": "把形狀從[batch,1]變成[batch] 方便與y_batch 對齊",
-      "B": "只取第0個樣本",
-      "C": "只保留第0個特徵",
-      "D": "把資料轉到 CPU"
-    }
-  },
-  {
-    "id": 126,
-    "a": "C",
-    "q": "XOR 範例中 is_correct = ((pred>=0.5).float()==y_batch).float()的pred>=0.5 意義是?",
-    "o": {
-      "A": "把pred 變成 one-hot",
-      "B": "把pred變成logits",
-      "C": "以0.5作為二元分類決策閾值",
-      "D": "把pred做標準化"
-    }
-  },
-  {
-    "id": 127,
-    "a": "B",
-    "q": "Matplotlib fig.add_subplot(1,2,1)的參數(1,2,1)代表?",
-    "o": {
-      "A": "1個子圖、2列、1行",
-      "B": "1列、2欄、取第1個子圖",
-      "C": "2列、1欄、取第1個子圖",
-      "D": "設定 figure 大小為(1,2,1)"
-    }
-  },
-  {
-    "id": 128,
-    "a": "D",
-    "q": "plot_decision_regions(...)在此章節主要用於?",
-    "o": {
-      "A": "計算梯度",
-      "B": "訓練模型",
-      "C": "下載資料集",
-      "D": "視覺化分類決策邊界"
-    }
-  },
-  {
-    "id": 129,
-    "a": "C",
-    "q": "MyModule.predict()回傳(pred>=0.5).float()最適合用於哪種任務?",
-    "o": {
-      "A": "回歸",
-      "B": "多類別分類",
-      "C": "二元分類",
-      "D": "降維"
-    }
-  },
-  {
-    "id": 130,
-    "a": "B",
-    "q": "在自訂層 NoisyLinear self.w = nn.Parameter(w)的目的為何?",
-    "o": {
-      "A": "把w設為常數不可訓練",
-      "B": "將w註冊為可訓練參數(會出現在 model.parameters())",
-      "C": "把w儲存到硬碟",
-      "D": "把w轉成稀疏格式"
-    }
-  },
-  {
-    "id": 131,
-    "a": "D",
-    "q": "Noisy Linear.forward(x, training=True) 中加入 noise 的設計最接近哪種概念?",
-    "o": {
-      "A": "Batch Normalization",
-      "B": "資料清洗",
-      "C": "模型蒸餾",
-      "D": "訓練時注入隨機擾動以增加強健性/正則化效果"
-    }
-  },
-  {
-    "id": 132,
-    "a": "A",
-    "q": "NoisyLinear 中 noise = torch.normal(0.0, self.noise stddev, x.shape)的x.shape 主要用於?",
-    "o": {
-      "A": "讓雜訊張量與輸入x形狀一致以便相加",
-      "B": "設定隨機種子",
-      "C": "設定 batch_size",
-      "D": "設定輸出維度"
-    }
-  },
-  {
-    "id": 133,
-    "a": "C",
-    "q": "Noisy Linear.forward回傳 torch.add(torch.mm(x_new, self.w), self.b)的torch.mm對應哪種運算?",
-    "o": {
-      "A": "逐元素乘法",
-      "B": "卷積",
-      "C": "矩陣乘法",
-      "D": "張量堆疊"
-    }
-  },
-  {
-    "id": 134,
-    "a": "B",
-    "q": "在 NoisyLinear 測試中,為何 training=True的兩次輸出會不同?",
-    "o": {
-      "A": "因為權重每次都重新初始化",
-      "B": "因為每次 forward 都重新抽樣雜訊",
-      "C": "因為 optimizer.step() 被呼叫",
-      "D": "因為模型自動切換到 eval 模式"
-    }
-  },
-  {
-    "id": 135,
-    "a": "D",
-    "q": "MyNoisy Module.forward(self, x, training=False)在訓練時呼叫 model(x_batch, True)的True主要用途是?",
-    "o": {
-      "A": "指定使用CPU",
-      "B": "指定使用float32",
-      "C": "指定使用 batch_size",
-      "D": "告知自訂層啟用雜訊注入"
-    }
-  },
-  {
-    "id": 136,
-    "a": "A",
-    "q": "pd.read_csv(..., na_values='?') 在 Auto-MPG 資料讀取中代表?",
-    "o": {
-      "A": "把 '?' 視為缺失值 NaN",
-      "B": "把 '?' 視為註解",
-      "C": "把 '?' 視為分隔符號",
-      "D": "把 '?' 自動替換成 0"
-    }
-  },
-  {
-    "id": 137,
-    "a": "C",
-    "q": "pd.read_csv(..., sep='\\s+', skipinitialspace=True)的組合最主要處理什麼問題?",
-    "o": {
-      "A": "自動將類別欄位 one-hot",
-      "B": "自動刪除空白列",
-      "C": "以空白分隔且忽略多餘空格造成的欄位偏移",
-      "D": "自動把資料標準化"
-    }
-  },
-  {
-    "id": 138,
-    "a": "B",
-    "q": "df.isna().sum()的輸出最接近什麼意義?",
-    "o": {
-      "A": "每欄位的平均值",
-      "B": "每欄位缺失值(NaN)數量",
-      "C": "每欄位的標準差",
-      "D": "每列缺失值數量"
-    }
-  },
-  {
-    "id": 139,
-    "a": "D",
-    "q": "df = df.dropna(); df = df.reset_index(drop=True)的組合最合理的目的為?",
-    "o": {
-      "A": "把缺失值補零並保留舊索引",
-      "B": "把資料排序並加入新欄位",
-      "C": "把資料切成 train/test",
-      "D": "刪除含缺失值的列並重建連續索引"
-    }
-  },
-  {
-    "id": 140,
-    "a": "A",
-    "q": "train_test_split(df, train_size=0.8, random_state=1) 中random state 的主要作用是?",
-    "o": {
-      "A": "讓切分可重現",
-      "B": "讓模型自動調參",
-      "C": "讓資料自動標準化",
-      "D": "讓測試集變大"
-    }
-  },
-  {
-    "id": 141,
-    "a": "B",
-    "q": "df_train.describe().transpose()最常用來達成什麼?",
-    "o": {
-      "A": "把列轉成字串",
-      "B": "取得各欄位統計量並讓欄位成為列(便於索引 mean/std)",
-      "C": "把資料集轉成張量",
-      "D": "把資料集做 PCA"
-    }
-  },
-  {
-    "id": 142,
-    "a": "C",
-    "q": "在標準化流程中使用 train_stats(由訓練集計算 mean/std)去轉換 test 的主要原因是?",
-    "o": {
-      "A": "提高訓練速度但會降低準確率",
-      "B": "避免需要驗證集",
-      "C": "避免資料洩漏並保持評估一致性",
-      "D": "讓 test 分佈刻意不同以測試泛化"
-    }
-  },
-  {
-    "id": 143,
-    "a": "D",
-    "q": "程式碼中使用 version.parse(pd. version)主要是為了?",
-    "o": {
-      "A": "取得sklearn 版本",
-      "B": "比較 torch 版本",
-      "C": "下載資料集",
-      "D": "因應不同 pandas 版本在賦值語法/行為上的差異"
-    }
-  },
-  {
-    "id": 144,
-    "a": "A",
-    "q": "torch.bucketize(v, boundaries, right=True)主要用途是?",
-    "o": {
-      "A": "把連續/序數值分桶成離散區間索引",
-      "B": "把資料隨機打亂",
-      "C": "把張量轉成稀疏矩陣",
-      "D": "把維度展平"
-    }
-  },
-  {
-    "id": 145,
-    "a": "B",
-    "q": "在程式中 boundaries = torch.tensor([73,76,79])被用來處理哪一欄位?",
-    "o": {
-      "A": "Horsepower",
-      "B": "Model Year",
-      "C": "MPG",
-      "D": "Origin"
-    }
-  },
-  {
-    "id": 146,
-    "a": "C",
-    "q": "from torch.nn.functional import one_hot; one_hot(...)在此案例主要用於?",
-    "o": {
-      "A": "把連續值標準化",
-      "B": "把張量排序",
-      "C": "將類別欄位轉成 one-hot 編碼",
-      "D": "將 float 轉成 int"
-    }
-  },
-  {
-    "id": 147,
-    "a": "D",
-    "q": "x_train = torch.cat([x_train_numeric, origin_encoded], 1).float() 中 dim=1的意義是?",
-    "o": {
-      "A": "沿樣本維度追加樣本",
-      "B": "沿batch 維度堆疊 batch",
-      "C": "沿時間維度串接",
-      "D": "沿特徵維度(欄位)串接特徵"
-    }
-  },
-  {
-    "id": 148,
-    "a": "A",
-    "q": "在回歸模型中 loss_fn = nn.MSELoss()最符合哪類任務?",
-    "o": {
-      "A": "連續值預測(回歸)",
-      "B": "二元分類",
-      "C": "多類別分類",
-      "D": "聚類"
-    }
-  },
-  {
-    "id": 149,
-    "a": "B",
-    "q": "with torch.no_grad():在測試階段最主要的好處是?",
-    "o": {
-      "A": "自動套用 dropout",
-      "B": "不追蹤梯度以降低記憶體/計算開銷",
-      "C": "自動把資料轉成 float64",
-      "D": "自動提升準確率"
-    }
-  },
-  {
-    "id": 150,
-    "a": "C",
-    "q": "Test MAE: nn.L1Loss() (pred, y_test) 代表的評估指標為?",
-    "o": {
-      "A": "均方誤差",
-      "B": "交叉熵",
-      "C": "平均絕對誤差",
-      "D": "R^2"
-    }
-  },
-  {
-    "id": 151,
-    "a": "A",
-    "q": "MNIST 讀取時使用 transforms.Compose([transforms. ToTensor()])的ToTensor() 典型作用是?",
-    "o": {
-      "A": "把影像轉為 Tensor 並做常見的0~1縮放",
-      "B": "把 Tensor 轉回 PIL",
-      "C": "把標籤轉 one-hot",
-      "D": "把資料做標準化到均值0"
-    }
-  },
-  {
-    "id": 152,
-    "a": "B",
-    "q": "torchvision.datasets.MNIST(..., download=True)代表?",
-    "o": {
-      "A": "只載入測試集",
-      "B": "若本地無資料則自動下載資料集",
-      "C": "自動訓練模型",
-      "D": "自動計算 accuracy"
-    }
-  },
-  {
-    "id": 153,
-    "a": "C",
-    "q": "MNIST 模型的第一層是nn.Flatten(),其主要目的為?",
-    "o": {
-      "A": "把logits 轉成機率",
-      "B": "把資料做 one-hot",
-      "C": "把影像展平成向量以便接全連接層",
-      "D": "把資料搬到 GPU"
-    }
-  },
-  {
-    "id": 154,
-    "a": "D",
-    "q": "MNIST 模型最後一層輸出10個單元,最合理原因是?",
-    "o": {
-      "A": "每張圖有10個通道",
-      "B": "每張圖大小為 10x10",
-      "C": "每個 batch有10張圖",
-      "D": "MNIST有10個數字類別(0-9)"
-    }
-  },
-  {
-    "id": 155,
-    "a": "A",
-    "q": "MNIST 訓練使用nn.CrossEntropyLoss(),模型輸出 pred 通常應是?",
-    "o": {
-      "A": "未經 softmax的logits",
-      "B": "必須先經 sigmoid的機率",
-      "C": "必須先四捨五入的類別",
-      "D": "one-hot 目標向量"
-    }
-  },
-  {
-    "id": 156,
-    "a": "B",
-    "q": "訓練 MNIST 時 is_correct = (torch.argmax(pred, dim=1)==y_batch).float() 中argmax 的作用是?",
-    "o": {
-      "A": "取最小機率的類別",
-      "B": "取最大 logit/機率對應的預測類別索引",
-      "C": "把輸出轉成 one-hot",
-      "D": "把輸出做標準化"
-    }
-  },
-  {
-    "id": 157,
-    "a": "C",
-    "q": "accuracy_hist_train /= len(train_dl.dataset)這行代表?",
-    "o": {
-      "A": "用 batch_size 正規化 loss",
-      "B": "把 accuracy 變成百分比",
-      "C": "用訓練集樣本總數計算整體正確率",
-      "D": "把訓練資料集縮小"
-    }
-  },
-  {
-    "id": 158,
-    "a": "D",
-    "q": "MNIST 測試時 pred = model(mnist_test_dataset.data/255.) 中除以255的主要目的為?",
-    "o": {
-      "A": "把資料轉成 int64",
-      "B": "把資料展平",
-      "C": "把資料打亂",
-      "D": "把 uint8 像素值縮放到 0~1"
-    }
-  },
-  {
-    "id": 159,
-    "a": "A",
-    "q": "在回歸與分類的兩個專案中,optimizer 分別用 SGD 與Adam。下列敘述何者最合理?",
-    "o": {
-      "A": "Adam 常用於較深/較複雜網路,具自適應學習率;SGD較基礎但可搭配動量等",
-      "B": "Adam只能用於回歸",
-      "C": "SGD不能用於神經網路",
-      "D": "兩者都不需要梯度"
-    }
-  },
-  {
-    "id": 160,
-    "a": "D",
-    "q": "在CNN中,「卷積核(filter/kernel)」最貼近下列哪個描述?",
-    "o": {
-      "A": "每一張影像的標籤",
-      "B": "用於隨機丟棄神經元的遮罩",
-      "C": "用於將特徵標準化的參數",
-      "D": "在輸入上滑動做點積以生成特徵圖的可學習權重矩陣"
-    }
-  },
-  {
-    "id": 161,
-    "a": "C",
-    "q": "卷積層輸出的「特徵圖(feature map)」最合理的意義是?",
-    "o": {
-      "A": "輸入影像的原始像素",
-      "B": "模型的梯度矩陣",
-      "C": "某個卷積核對輸入不同位置的回應強度分佈",
-      "D": "輸入影像的壓縮檔"
-    }
-  },
-  {
-    "id": 162,
-    "a": "B",
-    "q": "「步長(stride)」在卷積/池化中主要控制什麼?",
-    "o": {
-      "A": "卷積核的通道數",
-      "B": "視窗每次移動的距離",
-      "C": "活化函數的種類",
-      "D": "輸出類別數"
-    }
-  },
-  {
-    "id": 163,
-    "a": "A",
-    "q": "「補零(padding)」在卷積中最常見的目的之一是?",
-    "o": {
-      "A": "控制輸出空間尺寸並保留邊界資訊",
-      "B": "讓卷積核變成常數",
-      "C": "讓梯度變成0",
-      "D": "把影像轉成灰階"
-    }
-  },
-  {
-    "id": 164,
-    "a": "D",
-    "q": "若輸入大小為H×W,卷積核大小為K×K,步長S、padding P(同一方向),輸出大小(單一空間維)最常用的公式是?",
-    "o": {
-      "A": "H_out=H+K+P",
-      "B": "H_out=H/S",
-      "C": "H_out=(H-K)/P+1",
-      "D": "H_out=floor((H+2P-K)/S)+1"
-    }
-  },
-  {
-    "id": 165,
-    "a": "C",
-    "q": "池化(pooling)層在理論上常被用來提供什麼效果?",
-    "o": {
-      "A": "增加參數量",
-      "B": "讓輸出必為機率",
-      "C": "降低空間解析度以提升一定程度的平移不變性並減少計算",
-      "D": "將影像轉成文字"
-    }
-  },
-  {
-    "id": 166,
-    "a": "A",
-    "q": "最大池化(max pooling)與平均池化(avg pooling)的主要差異為?",
-    "o": {
-      "A": "前者取區塊最大值;後者取區塊平均值",
-      "B": "前者只能用於回歸;後者只能用於分類",
-      "C": "前者會增加解析度;後者會降低解析度",
-      "D": "兩者完全等價"
-    }
-  },
-  {
-    "id": 167,
-    "a": "A",
-    "q": "在卷積層中,out channels(輸出通道數)最直接對應?",
-    "o": {
-      "A": "卷積核(filters)的個數",
-      "B": "影像寬度",
-      "C": "影像高度",
-      "D": "batch size"
-    }
-  },
-  {
-    "id": 168,
-    "a": "C",
-    "q": "在影像張量常見格式[N, C, H, W]中,C通常代表?",
-    "o": {
-      "A": "樣本數",
-      "B": "高度",
-      "C": "通道數(如灰階1、RGB3)",
-      "D": "寬度"
-    }
-  },
-  {
-    "id": 169,
-    "a": "D",
-    "q": "為何 CNN 常搭配 ReLU 這類非線性活化?",
-    "o": {
-      "A": "保證輸出總和為1",
-      "B": "避免需要標準化",
-      "C": "讓所有輸出都介於0與1",
-      "D": "提供非線性以表達複雜函數並改善梯度傳遞(相對 sigmoid 飽和)"
-    }
-  },
-  {
-    "id": 170,
-    "a": "A",
-    "q": "CNN的「局部連接(local connectivity)」意味著?",
-    "o": {
-      "A": "每個輸出神經元只連到輸入的局部區域",
-      "B": "每個輸出都連到整張輸入",
-      "C": "每個輸出只連到標籤",
-      "D": "輸入一定要是 ID"
-    }
-  },
-  {
-    "id": 171,
-    "a": "C",
-    "q": "當 stride=1 且 padding 使輸出尺寸與輸入相同時,常被口語稱為?",
-    "o": {
-      "A": "valid convolution",
-      "B": "strict convolution",
-      "C": "same convolution (類 same 效果)",
-      "D": "inverse convolution"
-    }
-  },
-  {
-    "id": 172,
-    "a": "B",
-    "q": "卷積與「相關(correlation)」最典型的差異在於?",
-    "o": {
-      "A": "是否需要活化函數",
-      "B": "是否會翻轉卷積核(kernel flip)",
-      "C": "是否需要GPU",
-      "D": "是否只能處理 2D"
-    }
-  },
-  {
-    "id": 173,
-    "a": "A",
-    "q": "為何多類別分類常用 Cross-Entropy損失?",
-    "o": {
-      "A": "等價於最大化正確類別的對數似然(常搭配softmax)",
-      "B": "保證訓練損失為0",
-      "C": "只適用於回歸",
-      "D": "不需要標籤"
-    }
-  },
-  {
-    "id": 174,
-    "a": "B",
-    "q": "二元分類常用 BCEWithLogitsLoss 的理論好處是?",
-    "o": {
-      "A": "強制輸出總和為1",
-      "B": "把sigmoid 與BCE 合併成數值更穩定的形式",
-      "C": "只能用於多類別",
-      "D": "自動做資料增強"
-    }
-  },
-  {
-    "id": 175,
-    "a": "D",
-    "q": "過擬合(overfitting)最典型的現象是?",
-    "o": {
-      "A": "訓練與測試都差",
-      "B": "訓練差但測試好",
-      "C": "訓練與測試都好",
-      "D": "訓練表現好但測試/驗證表現變差"
-    }
-  },
-  {
-    "id": 176,
-    "a": "A",
-    "q": "資料增強(data augmentation)在理論上最常被用來做什麼?",
-    "o": {
-      "A": "增加有效訓練分佈覆蓋、減少過擬合、提升泛化",
-      "B": "保證準確率 100%",
-      "C": "取代測試集",
-      "D": "使模型不需要非線性"
-    }
-  },
-  {
-    "id": 177,
-    "a": "B",
-    "q": "隨機水平翻轉(RandomHorizontalFlip)對臉部笑容分類這類任務的常見影響是?",
-    "o": {
-      "A": "必然降低泛化",
-      "B": "通常可視為合理增強(左右對稱近似)以提升泛化",
-      "C": "會改變標籤為相反類別",
-      "D": "只能在測試時用"
-    }
-  },
-  {
-    "id": 178,
-    "a": "C",
-    "q": "隨機裁切(RandomCrop)相較中心裁切(CenterCrop)的主要差異是?",
-    "o": {
-      "A": "前者不改變影像大小;後者會改變",
-      "B": "前者只用於驗證;後者只用於訓練",
-      "C": "前者引入隨機性以增強;後者提供穩定一致的前處理",
-      "D": "兩者完全相同"
-    }
-  },
-  {
-    "id": 179,
-    "a": "D",
-    "q": "Dropout 的核心正則化直觀最貼近?",
-    "o": {
-      "A": "把權重全部歸零",
-      "B": "把特徵全部標準化",
-      "C": "把資料集變小",
-      "D": "訓練時隨機丟棄部分神經元,近似多個子網路集成以降低共適應"
-    }
-  },
-  {
-    "id": 180,
-    "a": "A",
-    "q": "在推論時(eval模式)Dropout 通常如何處理?",
-    "o": {
-      "A": "停用隨機丟棄,改用期望尺度輸出(不再隨機置零)",
-      "B": "仍以同樣機率丟棄",
-      "C": "把輸出改成 one-hot",
-      "D": "把輸入做隨機裁切"
-    }
-  },
-  {
-    "id": 181,
-    "a": "B",
-    "q": "L2 正則化(weight decay)在理論上最接近哪個效果?",
-    "o": {
-      "A": "鼓勵權重變大以增加容量",
-      "B": "鼓勵權重變小以降低模型複雜度",
-      "C": "等價於L1 正則化",
-      "D": "等價於Dropout"
-    }
-  },
-  {
-    "id": 182,
-    "a": "C",
-    "q": "Batch Normalization(若章節提及)在理論/實務上最常被用來?",
-    "o": {
-      "A": "把影像轉成灰階",
-      "B": "把輸出轉成機率",
-      "C": "穩定中間層分佈、加速訓練並在一定程度上正則化",
-      "D": "取代卷積層"
-    }
-  },
-  {
-    "id": 183,
-    "a": "D",
-    "q": "為何「將像素值由0-255 縮放到0-1」通常有助於訓練?",
-    "o": {
-      "A": "讓資料變成離散",
-      "B": "讓卷積核不需要學習",
-      "C": "使梯度必為0",
-      "D": "改善數值尺度與最佳化穩定性"
-    }
-  },
-  {
-    "id": 184,
-    "a": "A",
-    "q": "在影像分類中使用 mini-batch SGD的常見折衷是?",
-    "o": {
-      "A": "每步梯度帶雜訊但計算/記憶體更可控,且常有助泛化",
-      "B": "一定比full-batch 慢",
-      "C": "不需要學習率",
-      "D": "保證不會過擬合"
-    }
-  },
-  {
-    "id": 185,
-    "a": "B",
-    "q": "「早停(early stopping)」的理論目的最貼近?",
-    "o": {
-      "A": "讓模型完全不學習",
-      "B": "以驗證集表現停止訓練,避免繼續擬合雜訊造成過擬合",
-      "C": "讓訓練資料變小",
-      "D": "強制模型線性化"
-    }
-  },
-  {
-    "id": 186,
-    "a": "A",
-    "q": "「全域平均池化(Global Average Pooling, GAP)」最貼近哪個概念?",
-    "o": {
-      "A": "對每個通道的空間維度取平均,得到每通道一個值",
-      "B": "對每個通道取最大值並展平",
-      "C": "把影像放大到固定大小",
-      "D": "把所有通道相加成1通道"
-    }
-  },
-  {
-    "id": 187,
-    "a": "D",
-    "q": "在CNN 中使用 1×1 卷積(pointwise conv)的常見作用是?",
-    "o": {
-      "A": "改變影像高度",
-      "B": "改變影像寬度",
-      "C": "只做邊緣偵測",
-      "D": "在不改變空間尺寸下混合/變換通道維度"
-    }
-  },
-  {
-    "id": 188,
-    "a": "A",
-    "q": "「特徵圖通道數增加」通常意味著?",
-    "o": {
-      "A": "模型可學習的特徵種類變多(表示能力增加)",
-      "B": "影像解析度一定變高",
-      "C": "batch size 一定變大",
-      "D": "loss一定變小"
-    }
-  },
-  {
-    "id": 189,
-    "a": "B",
-    "q": "在訓練與推論切換時,為何需要 model.train() / model.eval()?",
-    "o": {
-      "A": "因為會改變卷積核大小",
-      "B": "因為某些層(Dropout/BatchNorm)在兩種模式行為不同",
-      "C": "因為會自動更換 optimizer",
-      "D": "因為會自動改變資料集"
-    }
-  },
-  {
-    "id": 190,
-    "a": "C",
-    "q": "使用 torch.no_grad() 進行推論的主要好處是?",
-    "o": {
-      "A": "提高類別數",
-      "B": "自動做資料增強",
-      "C": "不追蹤梯度以節省記憶體與加速",
-      "D": "讓輸出更準"
-    }
-  },
-  {
-    "id": 191,
-    "a": "D",
-    "q": "在影像分類模型中,若最後輸出為1個 logit 且用 sigmoid,最合理對應的任務是?",
-    "o": {
-      "A": "10類分類",
-      "B": "回歸",
-      "C": "自編碼器",
-      "D": "二元分類"
-    }
-  },
-  {
-    "id": 192,
-    "a": "A",
-    "q": "若最後輸出為C個 logits 且用 CrossEntropyLoss,最合理對應的任務是?",
-    "o": {
-      "A": "C類多類別分類",
-      "B": "二元分類",
-      "C": "回歸",
-      "D": "聚類"
-    }
-  },
-  {
-    "id": 193,
-    "a": "B",
-    "q": "為何在分類模型中常使用「logits」而非直接輸出機率再算loss?",
-    "o": {
-      "A": "因為logits 比機率更直觀",
-      "B": "數值穩定性更好(避免在極端機率下 log造成問題)",
-      "C": "因為logits一定介於0和1",
-      "D": "因為 logits 不需要標籤"
-    }
-  },
-  {
-    "id": 194,
-    "a": "D",
-    "q": "卷積核大小變大(例如3×3 → 7×7)在理論上的直接影響更接近?",
-    "o": {
-      "A": "參數量一定下降",
-      "B": "感受野一定變小",
-      "C": "輸出通道一定變少",
-      "D": "單層能覆蓋更大局部區域,但參數/計算可能增加"
-    }
-  },
-  {
-    "id": 195,
-    "a": "A",
-    "q": "池化層減少空間尺寸的常見副作用是?",
-    "o": {
-      "A": "可能丟失部分精細空間資訊",
-      "B": "一定提高解析度",
-      "C": "一定增加參數量",
-      "D": "一定造成梯度爆炸"
-    }
-  },
-  {
-    "id": 196,
-    "a": "B",
-    "q": "在CNN 訓練中觀察訓練損失下降但驗證損失上升,最合理的解讀是?",
-    "o": {
-      "A": "欠擬合",
-      "B": "可能過擬合",
-      "C": "資料一定已被打亂",
-      "D": "模型一定沒有學習"
-    }
-  },
-  {
-    "id": 197,
-    "a": "D",
-    "q": "卷積層的偏置(bias)在理論上最貼近?",
-    "o": {
-      "A": "將輸出強制歸零",
-      "B": "將輸出做標準化",
-      "C": "將輸出轉成機率",
-      "D": "對每個輸出通道加上一個可學習的常數偏移"
-    }
-  },
-  {
-    "id": 198,
-    "a": "A",
-    "q": "在CNN中,使用多個卷積層串接而非單一大卷積核的一個常見理由是?",
-    "o": {
-      "A": "以較少參數與更多非線性組合出更大感受野與更強表達力",
-      "B": "因為大卷積核無法反向傳播",
-      "C": "因為多層一定更慢",
-      "D": "因為多層不需要活化函數"
-    }
-  },
-  {
-    "id": 199,
-    "a": "B",
-    "q": "在資料增強中使用「隨機翻轉/裁切」的共同理論目標最貼近?",
-    "o": {
-      "A": "讓模型只記住訓練資料",
-      "B": "讓模型學到對某些幾何變換更不敏感,提高泛化",
-      "C": "讓模型輸出總和為1",
-      "D": "讓模型不需要卷積層"
-    }
-  },
-  {
-    "id": 200,
-    "a": "C",
-    "q": "在訓練曲線中同時追蹤 loss 與 accuracy 的好處最貼近?",
-    "o": {
-      "A": "兩者永遠等價",
-      "B": "只看 loss 就足夠",
-      "C": "可分別觀察最佳化與分類表現,及時發現過擬合/欠擬合",
-      "D": "只看 accuracy 就足夠"
-    }
-  },
-  {
-    "id": 201,
-    "a": "D",
-    "q": "在二元分類中使用0.5 當閾值的隱含前提最貼近?",
-    "o": {
-      "A": "保證最佳F1",
-      "B": "保證最佳 recall",
-      "C": "保證沒有誤判",
-      "D": "正負類代價大致對稱且輸出可解釋為機率時的常見預設"
-    }
-  },
-  {
-    "id": 202,
-    "a": "A",
-    "q": "在CNN 影像分類中,若輸入影像解析度提高很多,最直接的工程/理論影響是?",
-    "o": {
-      "A": "計算量與記憶體需求增加(特徵圖更大)",
-      "B": "參數量一定不變且計算量下降",
-      "C": "訓練一定更快",
-      "D": "模型一定更準"
-    }
-  },
-  {
-    "id": 203,
-    "a": "B",
-    "q": "卷積層中「輸入通道數」增加(如灰階→RGB)最直接影響是?",
-    "o": {
-      "A": "卷積核空間尺寸變小",
-      "B": "每個卷積核在深度方向的權重維度增加(參數增加)",
-      "C": "輸出高度變小",
-      "D": "步長自動變大"
-    }
-  },
-  {
-    "id": 204,
-    "a": "C",
-    "q": "在conv1d(x,w,...) 中先做 $w\\_rot=np.array(w[::-1])$ 的用意最接近?",
-    "o": {
-      "A": "將輸入x反轉",
-      "B": "將w轉成 float64",
-      "C": "符合離散卷積需要對核進行翻轉(相對於相關運算)",
-      "D": "讓輸出長度變成原本的一半"
-    }
-  },
-  {
-    "id": 205,
-    "a": "D",
-    "q": "conv1d(x,w,p=2,s=1) 中的p=2最合理代表?",
-    "o": {
-      "A": "把輸入縮放2倍",
-      "B": "把核大小設為2",
-      "C": "把 stride 設為2",
-      "D": "在輸入左右各補2個0 (zero padding)"
-    }
-  },
-  {
-    "id": 206,
-    "a": "B",
-    "q": "conv1d(x,w,p=0,s=2) 中s=2的意義最接近?",
-    "o": {
-      "A": "卷積核大小為2",
-      "B": "以步長2移動視窗 (stride=2)",
-      "C": "對輸入做2次卷積",
-      "D": "把輸出乘上2"
-    }
-  },
-  {
-    "id": 207,
-    "a": "A",
-    "q": "在conv1d 的for迴圈 range(..., s)中最後的s作為step,主要控制?",
-    "o": {
-      "A": "視窗移動的步幅(stride)",
-      "B": "補零的數量",
-      "C": "核的翻轉方向",
-      "D": "輸出資料型態"
-    }
-  },
-  {
-    "id": 208,
-    "a": "B",
-    "q": "在conv2d(X,W,...) 中 $W\\_rot=np.array(W)[::-1,::-1]$ 的效果為?",
-    "o": {
-      "A": "把W轉成對角矩陣",
-      "B": "在兩個空間維度上翻轉卷積核",
-      "C": "把輸入X翻轉",
-      "D": "把W做轉置而已"
-    }
-  },
-  {
-    "id": 209,
-    "a": "D",
-    "q": "$conv2d(X,W,p=(1,1),s=(1,1))$ 中的 $p=(1,1)$ 最合理代表?",
-    "o": {
-      "A": "在輸入四周各補1個0並保持輸出不變",
-      "B": "只在列方向補1個0",
-      "C": "只在行方向補1個0",
-      "D": "在高度與寬度方向各補1層 0-padding"
-    }
-  },
-  {
-    "id": 210,
-    "a": "A",
-    "q": "scipy.signal.convolve2d(X,W,mode='same')的'same'最接近哪個效果?",
-    "o": {
-      "A": "輸出大小與 X 相同",
-      "B": "輸出大小與W相同",
-      "C": "輸出只含有效卷積區域",
-      "D": "輸出會自動做 softmax"
-    }
-  },
-  {
-    "id": 211,
-    "a": "C",
-    "q": "torchvision.io.read_image('example-image.png')回傳張量 img.shape的維度順序通常是?",
-    "o": {
-      "A": "[H, W, C]",
-      "B": "[W, H, C]",
-      "C": "[C, H, W]",
-      "D": "[N, C, H, W]"
-    }
-  },
-  {
-    "id": 212,
-    "a": "B",
-    "q": "read_image 讀入影像後,img.dtype 在範例中最常見為?",
-    "o": {
-      "A": "torch.float32",
-      "B": "torch.uint8",
-      "C": "torch.int64",
-      "D": "torch.bool"
-    }
-  },
-  {
-    "id": 213,
-    "a": "A",
-    "q": "讀入影像後,img.shape[0] 通常代表?",
-    "o": {
-      "A": "通道數(channels)",
-      "B": "高度(height)",
-      "C": "寬度(width)",
-      "D": "batch size"
-    }
-  },
-  {
-    "id": 214,
-    "a": "D",
-    "q": "在L2 正則化範例中,l2_penalty = l2_lambda * sum([(p**2).sum() for p in layer.parameters()]) 的意義為?",
-    "o": {
-      "A": "L1 正則化",
-      "B": "Dropout",
-      "C": "早停(early stopping)",
-      "D": "對權重平方和加權形成L2 懲罰項"
-    }
-  },
-  {
-    "id": 215,
-    "a": "C",
-    "q": "nn.Dropout(p=0.5)的p=0.5代表?",
-    "o": {
-      "A": "保留50% 神經元並將其值乘以0.5",
-      "B": "保留 50% 神經元並且不做縮放",
-      "C": "以0.5的機率將輸入元素置零(訓練時)",
-      "D": "以0.5的機率將權重置零(推論時)"
-    }
-  },
-  {
-    "id": 216,
-    "a": "B",
-    "q": "二元分類時,使用nn.BCEWithLogitsLoss()的主要好處是?",
-    "o": {
-      "A": "必須先做 softmax 才能用",
-      "B": "把 sigmoid 與BCE 合併以提升數值穩定性",
-      "C": "只能用於多類別分類",
-      "D": "自動把標籤轉成 one-hot"
-    }
-  },
-  {
-    "id": 217,
-    "a": "A",
-    "q": "在BCE 範例中,若已先計算 probas = torch.sigmoid(logits),最合適的loss 函數是?",
-    "o": {
-      "A": "nn.BCELoss()",
-      "B": "nn.CrossEntropyLoss()",
-      "C": "nn.NLLLoss()",
-      "D": "nn.MSELoss()"
-    }
-  },
-  {
-    "id": 218,
-    "a": "D",
-    "q": "在多類別分類中,nn.CrossEntropyLoss()通常期望模型輸出是?",
-    "o": {
-      "A": "已做argmax的類別索引",
-      "B": "已做 softmax的機率",
-      "C": "已做 sigmoid的機率",
-      "D": "未做softmax的logits"
-    }
-  },
-  {
-    "id": 219,
-    "a": "B",
-    "q": "若要用nn.NLLLoss()計算多類別損失,常見輸入應是?",
-    "o": {
-      "A": "原始logits",
-      "B": "log(probabilities) (例如 torch.log(softmax(logits)))",
-      "C": "one-hot向量",
-      "D": "標準化後的特徵"
-    }
-  },
-  {
-    "id": 220,
-    "a": "C",
-    "q": "MNIST 資料讀取時 transforms.ToTensor()的典型效果是?",
-    "o": {
-      "A": "把影像轉成 uint8 並縮放到 0~255",
-      "B": "把影像轉成 float64",
-      "C": "把影像轉成 tensor 並常見縮放到0~1",
-      "D": "把影像轉成 one-hot"
-    }
-  },
-  {
-    "id": 221,
-    "a": "A",
-    "q": "MNIST 的資料切分中,使用Subset(mnist_dataset, torch.arange(10000))代表?",
-    "o": {
-      "A": "取前 10,000 筆作為子資料集",
-      "B": "取隨機 10,000筆(自動打亂)",
-      "C": "取最後 10,000筆",
-      "D": "只取標籤為0的樣本"
-    }
-  },
-  {
-    "id": 222,
-    "a": "D",
-    "q": "建立DataLoader(mnist_train_dataset, batch_size=64, shuffle=True)時 shuffle=True 主要目的?",
-    "o": {
-      "A": "把資料轉成 float32",
-      "B": "讓每個epoch固定順序",
-      "C": "只在驗證集用",
-      "D": "每個 epoch 打亂樣本順序以減少順序偏差"
-    }
-  },
-  {
-    "id": 223,
-    "a": "B",
-    "q": "MNIST CNN 中第一層 Conv2d(in_channels=1,...)的in_channels=1代表?",
-    "o": {
-      "A": "輸入影像大小為 1x28x28",
-      "B": "MNIST為灰階影像(單通道)",
-      "C": "每次只讀1張圖",
-      "D": "只訓練1個類別"
-    }
-  },
-  {
-    "id": 224,
-    "a": "C",
-    "q": "MNIST CNN Conv2d(kernel_size=5, padding=2)的常見效果為?",
-    "o": {
-      "A": "把特徵圖尺寸變小4",
-      "B": "把特徵圖尺寸變大4",
-      "C": "在stride=1 下大致保持空間尺寸不變(same-like)",
-      "D": "強制輸出為 5x5"
-    }
-  },
-  {
-    "id": 225,
-    "a": "A",
-    "q": "在MNIST CNN MaxPool2d(kernel size=2)對28x28 特徵圖最常見的變化是?",
-    "o": {
-      "A": "變為 14x14",
-      "B": "變為56x56",
-      "C": "變為26x26",
-      "D": "維度不變"
-    }
-  },
-  {
-    "id": 226,
-    "a": "D",
-    "q": "MNIST CNN 經兩次 MaxPool2d(kernel_size=2)後,28x28通常變為?",
-    "o": {
-      "A": "24x24",
-      "B": "16x16",
-      "C": "8x8",
-      "D": "7x7"
-    }
-  },
-  {
-    "id": 227,
-    "a": "B",
-    "q": "MNIST CNN 兩個卷積區塊後的輸出 shape 為 torch.Size([4, 64, 7, 7]),flatten後每個樣本特徵數是?",
-    "o": {
-      "A": "64",
-      "B": "7*7",
-      "C": "64*7",
-      "D": "64*7*7"
-    }
-  },
-  {
-    "id": 228,
-    "a": "C",
-    "q": "MNIST CNN的第一個全連接層為nn.Linear(3136,1024)。3136最合理來源是?",
-    "o": {
-      "A": "32*7*7",
-      "B": "64*14*14",
-      "C": "64*7*7",
-      "D": "128*7*7"
-    }
-  },
-  {
-    "id": 229,
-    "a": "A",
-    "q": "在MNIST 訓練程式中 loss_fn=nn.CrossEntropyLoss(), target y_batch 的型態最常見為?",
-    "o": {
-      "A": "類別索引(0~9)的int張量",
-      "B": "one-hot向量",
-      "C": "機率分佈",
-      "D": "浮點連續值"
-    }
-  },
-  {
-    "id": 230,
-    "a": "D",
-    "q": "在MNIST 訓練程式中 is_correct = (torch.argmax(pred, dim=1)==y_batch).float()的argmax(dim=1)作用是?",
-    "o": {
-      "A": "取每個batch 的最大值",
-      "B": "取每個樣本的最小logit",
-      "C": "把輸出轉成 one-hot",
-      "D": "取每個樣本預測類別索引"
-    }
-  },
-  {
-    "id": 231,
-    "a": "B",
-    "q": "在訓練迴圈中,為何通常要在 optimizer.step()後呼叫 optimizer.zero_grad()?",
-    "o": {
-      "A": "避免權重被更新",
-      "B": "清除累積梯度以免跨 batch 累加",
-      "C": "切換到 eval 模式",
-      "D": "強制使用 CPU"
-    }
-  },
-  {
-    "id": 232,
-    "a": "C",
-    "q": "推論/驗證階段使用 model.eval()的主要原因是?",
-    "o": {
-      "A": "自動啟用資料增強",
-      "B": "自動計算梯度",
-      "C": "讓 Dropout/BatchNorm 等層採推論行為",
-      "D": "讓學習率變小"
-    }
-  },
-  {
-    "id": 233,
-    "a": "A",
-    "q": "驗證階段使用 with torch.no_grad():的主要原因是?",
-    "o": {
-      "A": "不追蹤梯度以節省記憶體與加速",
-      "B": "會自動把資料標準化",
-      "C": "會自動套用 dropout",
-      "D": "會自動調整 batch size"
-    }
-  },
-  {
-    "id": 234,
-    "a": "D",
-    "q": "MNIST 測試時使用 mnist_test_dataset.data.unsqueeze(1)的unsqueeze(1)主要目的?",
-    "o": {
-      "A": "把影像轉成彩色三通道",
-      "B": "把影像展平",
-      "C": "把資料轉成 float64",
-      "D": "補上通道維度使其變成[N, 1, H, W]"
-    }
-  },
-  {
-    "id": 235,
-    "a": "B",
-    "q": "MNIST 測試時將資料除以255.的主要目的為?",
-    "o": {
-      "A": "把資料轉成整數",
-      "B": "將 uint8 像素值縮放到0~1",
-      "C": "把資料做 Z-score 標準化",
-      "D": "把資料做 one-hot"
-    }
-  },
-  {
-    "id": 236,
-    "a": "C",
-    "q": "在範例中 torch.save(model, path)的行為最接近?",
-    "o": {
-      "A": "只儲存 optimizer 狀態",
-      "B": "只儲存 state_dict",
-      "C": "序列化整個模型物件到檔案",
-      "D": "將模型轉成 ONNX"
-    }
-  },
-  {
-    "id": 237,
-    "a": "A",
-    "q": "CelebA 資料集載入時使用 torchvision.datasets.CelebA(image_path, split='train', target_type='attr'), target_type='attr'代表?",
-    "o": {
-      "A": "目標為40維屬性向量(attributes)",
-      "B": "目標為類別索引(0~9)",
-      "C": "目標為bounding boxes",
-      "D": "目標為文字描述"
-    }
-  },
-  {
-    "id": 238,
-    "a": "D",
-    "q": "在程式中 get_smile = lambda attr: attr[18]的意義最接近?",
-    "o": {
-      "A": "取第18張圖片",
-      "B": "取第18個batch",
-      "C": "取第18個像素",
-      "D": "從屬性向量取出「smile」標籤(索引18)"
-    }
-  },
-  {
-    "id": 239,
-    "a": "B",
-    "q": "transform_train = Compose([RandomCrop, RandomHorizontalFlip, Resize, ToTensor])最主要反映哪種策略?",
-    "o": {
-      "A": "僅做中心裁切以保持一致",
-      "B": "訓練集做資料增強(augmentation)以提升泛化",
-      "C": "只在測試集做增強",
-      "D": "把影像轉成灰階"
-    }
-  },
-  {
-    "id": 240,
-    "a": "C",
-    "q": "驗證/測試用 transform = Compose([CenterCrop, Resize, ToTensor])的中心裁切(CenterCrop)主要目的?",
-    "o": {
-      "A": "每次隨機裁切產生不同樣本",
-      "B": "做顏色抖動",
-      "C": "提供穩定一致的前處理(避免隨機性)",
-      "D": "把影像旋轉90度"
-    }
-  },
-  {
-    "id": 241,
-    "a": "A",
-    "q": "在顯示影像 tensor 時使用 img.permute(1,2,0)的主要原因?",
-    "o": {
-      "A": "將[C,H,W] 轉成 [H,W,C] 以符合 matplotlib imshow",
-      "B": "把資料轉成 float64",
-      "C": "把影像做轉置以去雜訊",
-      "D": "把通道數變成1"
-    }
-  },
-  {
-    "id": 242,
-    "a": "D",
-    "q": "在資料增強示範中使用 next(iter(data_loader))的主要作用?",
-    "o": {
-      "A": "建立新的DataLoader",
-      "B": "把資料存成 pickle",
-      "C": "重設 random seed",
-      "D": "從 DataLoader 取得一個 batch 樣本"
-    }
-  },
-  {
-    "id": 243,
-    "a": "B",
-    "q": "在CelebA範例中,將train/valid 使用 Subset(...) 限制為16000與1000筆,最主要目的?",
-    "o": {
-      "A": "提升資料多樣性",
-      "B": "加快示範訓練速度/降低計算成本",
-      "C": "避免需要GPU",
-      "D": "讓資料必然平衡"
-    }
-  },
-  {
-    "id": 244,
-    "a": "C",
-    "q": "CelebA 訓練的DataLoader 參數 batch_size=32,最合理的影響是?",
-    "o": {
-      "A": "每次更新使用 32 個樣本的mini-batch 梯度",
-      "B": "每個epoch只有32 筆資料",
-      "C": "輸出類別數為32",
-      "D": "模型輸出維度為32"
-    }
-  },
-  {
-    "id": 245,
-    "a": "A",
-    "q": "Smile classifier CNN的第一層 Conv2d(in_channels=3,...) 中in_channels=3 代表?",
-    "o": {
-      "A": "輸入為RGB 三通道影像",
-      "B": "輸入影像大小為3x3",
-      "C": "每次讀3張圖片",
-      "D": "輸出為3類別"
-    }
-  },
-  {
-    "id": 246,
-    "a": "D",
-    "q": "Smile classifier 中使用nn.AvgPool2d(kernel_size=8) 並在註解稱為 Global Average Pooling,最合理的效果是?",
-    "o": {
-      "A": "把64x64 放大到128x128",
-      "B": "把通道數變成8",
-      "C": "把特徵展平後做 PCA",
-      "D": "將8x8 空間特徵平均成 1x1(每通道一個值)"
-    }
-  },
-  {
-    "id": 247,
-    "a": "B",
-    "q": "在Smile classifier 中 Linear(256,1)的256最合理來源?",
-    "o": {
-      "A": "輸入影像寬度",
-      "B": "最後一層卷積輸出通道數 out_channels=256",
-      "C": "最後一層池化 kernel_size=256",
-      "D": "訓練集類別數"
-    }
-  },
-  {
-    "id": 248,
-    "a": "C",
-    "q": "Smile classifier 末端加nn.Sigmoid()並使用nn.BCELoss(),最適合的任務是?",
-    "o": {
-      "A": "多類別分類(10類)",
-      "B": "回歸",
-      "C": "二元分類(smile vs not smile)",
-      "D": "無監督聚類"
-    }
-  },
-  {
-    "id": 249,
-    "a": "A",
-    "q": "在 Smile classifier 訓練迴圈中 pred = model(x_batch)[:,0]的[:,0]主要目的?",
-    "o": {
-      "A": "將輸出形狀從[batch,1] 變為[batch] 以對齊標籤",
-      "B": "只取第0個樣本",
-      "C": "只取第0個通道",
-      "D": "把資料轉到 CPU"
-    }
-  },
-  {
-    "id": 250,
-    "a": "D",
-    "q": "在 Smile classifier loss = loss_fn(pred, y_batch.float()) 必須float()的最常見原因?",
-    "o": {
-      "A": "因為BCE 只接受整數標籤",
-      "B": "因為模型輸出是int64",
-      "C": "因為y_batch是圖片張量",
-      "D": "因為 BCE 期望浮點型標籤/機率輸入"
-    }
-  },
-  {
-    "id": 251,
-    "a": "B",
-    "q": "Smile classifier 計算正確率時使用(pred>=0.5)的主要意義?",
-    "o": {
-      "A": "把 pred轉成 logits",
-      "B": "以0.5 作為二元分類決策閾值",
-      "C": "把 pred 轉成 one-hot",
-      "D": "把 pred 做標準化"
-    }
-  },
-  {
-    "id": 252,
-    "a": "C",
-    "q": "在訓練/驗證中將 loss 累加為 loss.item()*y_batch.size(0) 再除以len(dataset)的目的?",
-    "o": {
-      "A": "計算最大 loss",
-      "B": "計算 batch平均loss",
-      "C": "計算整個 epoch 的樣本加權平均loss",
-      "D": "把loss轉成百分比"
-    }
-  },
-  {
-    "id": 253,
-    "a": "A",
-    "q": "測試階段 accuracy_test /= len(test_dl.dataset)的最合理意義?",
-    "o": {
-      "A": "以測試集樣本總數計算整體正確率",
-      "B": "以 batch_size 計算正確率",
-      "C": "以類別數計算正確率",
-      "D": "以通道數計算正確率"
-    }
-  },
-  {
-    "id": 254,
-    "a": "B",
-    "q": "Python list 轉 NumPy ndarray的正確寫法是?",
-    "o": {
-      "A": "ndarray = list.numpy()",
-      "B": "ndarray = np.array(list)",
-      "C": "ndarray = torch.from_numpy(list)",
-      "D": "ndarray = np.ndarray(list)"
-    }
-  },
-  {
-    "id": 255,
-    "a": "B",
-    "q": "NumPy ndarray 轉 Python list 的正確寫法是?",
-    "o": {
-      "A": "list = ndarray.to_list()",
-      "B": "list = ndarray.tolist()",
-      "C": "list = ndarray.list()",
-      "D": "list = torch.tensor(ndarray).tolist()"
-    }
-  },
-  {
-    "id": 256,
-    "a": "B",
-    "q": "NumPy ndarray 轉 torch.Tensor(通常共享記憶體)的常用寫法是?",
-    "o": {
-      "A": "torch.tensor(ndarray)",
-      "B": "torch.from_numpy(ndarray)",
-      "C": "torch. Tensor (ndarray).copy()",
-      "D": "ndarray.to_tensor()"
-    }
-  },
-  {
-    "id": 257,
-    "a": "C",
-    "q": "GPU上的 tensor 轉 NumPy ndarray的正確流程是?",
-    "o": {
-      "A": "arr = t.numpy()",
-      "B": "arr = t.cuda().numpy()",
-      "C": "arr = t.detach().cpu().numpy()",
-      "D": "arr = np.frombuffer(t)"
-    }
-  },
-  {
-    "id": 258,
-    "a": "B",
-    "q": "將 tensor 搬到指定裝置 device 的常用寫法是?",
-    "o": {
-      "A": "t.move(device)",
-      "B": "t.to(device)",
-      "C": "torch.to(t, device)",
-      "D": "t.device(device)"
-    }
-  },
-  {
-    "id": 259,
-    "a": "B",
-    "q": "將 tensor 的dtype 轉成 torch.float32的常用寫法是?",
-    "o": {
-      "A": "t.astype('float32')",
-      "B": "t.to(torch.float32)",
-      "C": "t.float32()",
-      "D": "torch.dtype(t,'float32')"
-    }
-  },
-  {
-    "id": 260,
-    "a": "C",
-    "q": "取得張量維度數(rank)常用哪個方法?",
-    "o": {
-      "A": "t.rank()",
-      "B": "t.ndims()",
-      "C": "t.dim()",
-      "D": "t.axes()"
-    }
-  },
-  {
-    "id": 261,
-    "a": "B",
-    "q": "要切斷計算圖,避免梯度回傳到某 tensor,常用?",
-    "o": {
-      "A": "x = x.clone()",
-      "B": "x = x.detach()",
-      "C": "x = x.view(-1)",
-      "D": "x = x.float()"
-    }
-  },
-  {
-    "id": 262,
-    "a": "B",
-    "q": "若想取出單一元素張量的Python 數值(scalar),常用?",
-    "o": {
-      "A": "t.numpy()",
-      "B": "t.item()",
-      "C": "float(t.shape)",
-      "D": "t.scalar()"
-    }
-  },
-  {
-    "id": 263,
-    "a": "B",
-    "q": "想讓隨機結果可重現,最常用的PyTorch 指令是?",
-    "o": {
-      "A": "torch.set_seed(0)",
-      "B": "torch.manual_seed(0)",
-      "C": "torch.randomize(0)",
-      "D": "np.manual_seed(0)"
-    }
-  },
-  {
-    "id": 264,
-    "a": "B",
-    "q": "torch.randn(3,4)產生的隨機分佈通常是?",
-    "o": {
-      "A": "均勻分佈U(0,1)",
-      "B": "常態分佈N(0,1)",
-      "C": "伯努利分佈",
-      "D": "泊松分佈"
-    }
-  },
-  {
-    "id": 265,
-    "a": "A",
-    "q": "torch.rand(3,4)產生的隨機分佈通常是?",
-    "o": {
-      "A": "均勻分佈U(0,1)",
-      "B": "常態分佈N(0,1)",
-      "C": "指數分佈",
-      "D": "多項分佈"
-    }
-  },
-  {
-    "id": 266,
-    "a": "B",
-    "q": "若要建立全0的張量,常用?",
-    "o": {
-      "A": "torch.zero(3,4)",
-      "B": "torch.zeros(3,4)",
-      "C": "torch.empty(0,3,4)",
-      "D": "torch.null(3,4)"
-    }
-  },
-  {
-    "id": 267,
-    "a": "B",
-    "q": "torch.eye(4)會建立什麼?",
-    "o": {
-      "A": "全0矩陣",
-      "B": "對角為1的單位矩陣(4x4)",
-      "C": "全1矩陣",
-      "D": "隨機矩陣"
-    }
-  },
-  {
-    "id": 268,
-    "a": "B",
-    "q": "下列哪一個屬性可以查看 tensor 所在裝置(CPU/GPU)?",
-    "o": {
-      "A": "t.dtype",
-      "B": "t.device",
-      "C": "t.layout",
-      "D": "t.shape"
-    }
-  },
-  {
-    "id": 269,
-    "a": "B",
-    "q": "若未呼叫 optimizer.zero_grad(),最常見現象是?",
-    "o": {
-      "A": "loss 必定變成NaN",
-      "B": "梯度在每次 backward 後累積(加總)",
-      "C": "模型自動切到eval 模式",
-      "D": "DataLoader 會停止 shuffle"
-    }
-  },
-  {
-    "id": 270,
-    "a": "C",
-    "q": "在不追蹤梯度的情況下更新參數,常用的上下文管理器是?",
-    "o": {
-      "A": "with torch.train():",
-      "B": "with torch.eval():",
-      "C": "with torch.no_grad():",
-      "D": "with torch.grad_off():"
-    }
-  },
-  {
-    "id": 271,
-    "a": "A",
-    "q": "想讓某 tensor 參與梯度計算,最常設定?",
-    "o": {
-      "A": "t.requires_grad_(True)",
-      "B": "t.grad_(True)",
-      "C": "t.autograd_(True)",
-      "D": "t.backprop_(True)"
-    }
-  },
-  {
-    "id": 272,
-    "a": "B",
-    "q": "關於 tensor.grad,下列何者較正確?",
-    "o": {
-      "A": "任何 tensor 都有 grad",
-      "B": "通常需 requires_grad=True 且在 backward 後才會有 grad",
-      "C": "grad只會存在GPU",
-      "D": "grad一定是純量"
-    }
-  },
-  {
-    "id": 273,
-    "a": "A",
-    "q": "將 tensor 轉成 dtype=torch.float32的常用寫法是?",
-    "o": {
-      "A": "t.to(torch.float32)",
-      "B": "t.astype(dtype)",
-      "C": "dtype(t)",
-      "D": "t.cast(dtype)"
-    }
-  },
-  {
-    "id": 274,
-    "a": "A",
-    "q": "將 tensor 轉成 dtype=torch.int64的常用寫法是?",
-    "o": {
-      "A": "t.to(torch.int64)",
-      "B": "t.astype(dtype)",
-      "C": "dtype(t)",
-      "D": "t.cast(dtype)"
-    }
-  },
-  {
-    "id": 275,
-    "a": "B",
-    "q": "若 device = torch.device('cuda'),下列哪個可將 tensort 搬到該裝置?",
-    "o": {
-      "A": "t.move(device)",
-      "B": "t.to(device)",
-      "C": "torch.send(t, device)",
-      "D": "t.device(device)"
-    }
-  },
-  {
-    "id": 276,
-    "a": "B",
-    "q": "若 device = torch.device('cpu'),下列哪個可將 tensort 搬到該裝置?",
-    "o": {
-      "A": "t.move(device)",
-      "B": "t.to(device)",
-      "C": "torch.send(t, device)",
-      "D": "t.device(device)"
-    }
-  },
-  {
-    "id": 277,
-    "a": "A",
-    "q": "令t的shape=(10,2),執行 torch.transpose(t,0,1)後的shape為?",
-    "o": {
-      "A": "(2,10)",
-      "B": "(10,2)",
-      "C": "(10,)",
-      "D": "(2,)"
-    }
-  },
-  {
-    "id": 278,
-    "a": "A",
-    "q": "令t的shape=(1,2,1,4,1),執行 torch.squeeze(t, 2)後的shape為?",
-    "o": {
-      "A": "(1,2,4, 1)",
-      "B": "(1, 2, 1, 4, 1)",
-      "C": "(2,4,1,6)",
-      "D": "(1,)"
-    }
-  },
-  {
-    "id": 279,
-    "a": "A",
-    "q": "令t的shape=(2,3,4),執行 torch.unsqueeze(t, 2)後的shape為?",
-    "o": {
-      "A": "(2,3,1,4)",
-      "B": "(2, 3, 4)",
-      "C": "(1,)",
-      "D": "(2,2,2)"
-    }
-  },
-  {
-    "id": 280,
-    "a": "A",
-    "q": "張量共有168個元素,下列哪個 reshape 形狀是可行的?(以168為例-14x12)",
-    "o": {
-      "A": "(14,12)",
-      "B": "(14,13)",
-      "C": "(15,12)",
-      "D": "(13,12)"
-    }
-  },
-  {
-    "id": 281,
-    "a": "A",
-    "q": "A與B皆為shape=(10,) 的1D tensor, torch.cat([A,B], dim=0)的shape為?",
-    "o": {
-      "A": "(20,)",
-      "B": "(2,10)",
-      "C": "(10,2)",
-      "D": "(10,)"
-    }
-  },
-  {
-    "id": 282,
-    "a": "A",
-    "q": "A與B皆為shape=(10,)的1D tensor, torch.stack([A,B], dim=0)的shape為?",
-    "o": {
-      "A": "(2,10)",
-      "B": "(20,)",
-      "C": "(10,2)",
-      "D": "(1,20)"
-    }
-  },
-  {
-    "id": 283,
-    "a": "B",
-    "q": "令x shape=(3, 1, 7), y shape=(1,7),則x+y(broadcasting)結果的shape為?",
-    "o": {
-      "A": "(3, 1, 7)",
-      "B": "(3, 1, 7)",
-      "C": "(1,7)",
-      "D": "無法相加(shape不相容)"
-    }
-  },
-  {
-    "id": 284,
-    "a": "B",
-    "q": "下列哪個運算是矩陣乘法?",
-    "o": {
-      "A": "A*B",
-      "B": "A @ B",
-      "C": "torch.add(A,B)",
-      "D": "torch.stack([A,B])"
-    }
-  },
-  {
-    "id": 285,
-    "a": "B",
-    "q": "torch.argmax(logits, dim=1)在分類中常用於?",
-    "o": {
-      "A": "取得最大值本身",
-      "B": "取得最大值的索引(預測類別)",
-      "C": "計算 softmax",
-      "D": "計算梯度"
-    }
-  },
-  {
-    "id": 286,
-    "a": "B",
-    "q": "torch.softmax(z, dim=1)中dim=1 通常代表?",
-    "o": {
-      "A": "對 batch 維度做正規化",
-      "B": "對類別/特徵維度做正規化",
-      "C": "對所有元素做正規化",
-      "D": "只對第0個元素"
-    }
-  },
-  {
-    "id": 287,
-    "a": "B",
-    "q": "t.view(...) 與t.reshape(...)的差異,何者較常見?",
-    "o": {
-      "A": "view 一定複製;reshape 不會",
-      "B": "view需 contiguous; reshape 在需要時可能複製",
-      "C": "reshape 只能用 GPU",
-      "D": "兩者完全等價"
-    }
-  },
-  {
-    "id": 288,
-    "a": "B",
-    "q": "torch.permute 與 torch.transpose 的差異何者正確?",
-    "o": {
-      "A": "transpose 可任意重排多維",
-      "B": "permute 可任意重排維度;transpose多用於交換兩個維度",
-      "C": "兩者都只能2D",
-      "D": "permute只能CPU"
-    }
-  },
-  {
-    "id": 289,
-    "a": "B",
-    "q": "torch.flatten(t, start_dim=1)的常見用途是?",
-    "o": {
-      "A": "轉list",
-      "B": "把除 batch 維以外展平",
-      "C": "計算 softmax",
-      "D": "切換 dtype"
-    }
-  },
-  {
-    "id": 290,
-    "a": "B",
-    "q": "自訂 Dataset 類別在 PyTorch 中通常至少要實作哪兩個方法?",
-    "o": {
-      "A": "forward() 與 backward()",
-      "B": "len()與 getitem()",
-      "C": "fit() 與 predict()",
-      "D": "compile() 與 train()"
-    }
-  },
-  {
-    "id": 291,
-    "a": "C",
-    "q": "TensorDataset(X,y)搭配 DataLoader 迭代時,每個batch 通常回傳?",
-    "o": {
-      "A": "X_batch",
-      "B": "y_batch",
-      "C": "(X_batch, y_batch)",
-      "D": "{'X':X_batch,'y':y_batch}"
-    }
-  },
-  {
-    "id": 292,
-    "a": "C",
-    "q": "訓練迴圈中,最常見的正確順序是?",
-    "o": {
-      "A": "step -> backward -> zero_grad",
-      "B": "backward -> zero_grad -> step",
-      "C": "zero_grad -> backward -> step",
-      "D": "backward -> step -> zero_grad"
-    }
-  },
-  {
-    "id": 293,
-    "a": "B",
-    "q": "使用nn.CrossEntropyLoss()時,模型輸出應該是?",
-    "o": {
-      "A": "softmax後的機率",
-      "B": "logits(未經 softmax)",
-      "C": "sigmoid 後的機率",
-      "D": "one-hot 向量"
-    }
-  },
-  {
-    "id": 294,
-    "a": "B",
-    "q": "使用nn.BCEWithLogitsLoss()時,模型輸出應該是?",
-    "o": {
-      "A": "sigmoid後的機率",
-      "B": "logits(未經 sigmoid)",
-      "C": "softmax 後機率",
-      "D": "類別索引"
-    }
-  },
-  {
-    "id": 295,
-    "a": "B",
-    "q": "loss.backward()的主要作用是?",
-    "o": {
-      "A": "更新參數",
-      "B": "計算並累積梯度到.grad",
-      "C": "清空梯度",
-      "D": "切換到 eval 模式"
-    }
-  },
-  {
-    "id": 296,
-    "a": "A",
-    "q": "optimizer.step()的主要作用是?",
-    "o": {
-      "A": "根據.grad 更新參數",
-      "B": "計算梯度",
-      "C": "清空 DataLoader",
-      "D": "計算 accuracy"
-    }
-  },
-  {
-    "id": 297,
-    "a": "B",
-    "q": "drop_last=True 的DataLoader 代表?",
-    "o": {
-      "A": "丟棄第一個batch",
-      "B": "丟棄不足 batch_size 的最後一個batch",
-      "C": "最後一個batch 自動補齊",
-      "D": "每個batch 大小都隨機"
-    }
-  },
-  {
-    "id": 298,
-    "a": "B",
-    "q": "shuffle=True 的DataLoader 主要目的?",
-    "o": {
-      "A": "把資料依標籤排序",
-      "B": "每個 epoch 打亂資料順序",
-      "C": "把資料重複兩次",
-      "D": "把 batch_size變成1"
-    }
-  },
-  {
-    "id": 299,
-    "a": "A",
-    "q": "要在不計算梯度下做推論,最常用?",
-    "o": {
-      "A": "with torch.no_grad():",
-      "B": "with torch.train():",
-      "C": "with torch.keep_grad():",
-      "D": "with torch.freeze():"
-    }
-  },
-  {
-    "id": 300,
-    "a": "B",
-    "q": "model.eval()的主要影響為?",
-    "o": {
-      "A": "將 optimizer 清空",
-      "B": "停用 Dropout、BatchNorm 用推論統計量",
-      "C": "自動搬到GPU",
-      "D": "自動把 loss 變小"
-    }
-  },
-  {
-    "id": 301,
-    "a": "B",
-    "q": "torch.autograd 的核心概念是?",
-    "o": {
-      "A": "手動寫導數",
-      "B": "基於計算圖的自動微分",
-      "C": "只支援 CNN",
-      "D": "只能計算二階導數"
-    }
-  },
-  {
-    "id": 302,
-    "a": "C",
-    "q": "資料集大小 N=4096,batch_size=256。若drop_last=False,每個 epoch 共有幾個 batch? 最後一個 batch 有幾筆?",
-    "o": {
-      "A": "16個batch;最後256筆",
-      "B": "16個batch;最後256筆",
-      "C": "16個batch;最後256筆",
-      "D": "16個batch;最後256筆"
-    }
-  },
-  {
-    "id": 303,
-    "a": "A",
-    "q": "資料集大小 N=4096,batch_size=256。若 drop_last=True,每個 epoch 共有幾個 batch?",
-    "o": {
-      "A": "16個 batch",
-      "B": "17個 batch",
-      "C": "15個 batch",
-      "D": "無法確定,與 shuffle 有關"
-    }
-  },
-  {
-    "id": 304,
-    "a": "B",
-    "q": "使用nn.CrossEntropyLoss()做多類別分類時,target y的dtype 最常用?",
-    "o": {
-      "A": "torch.float32",
-      "B": "torch.long",
-      "C": "torch.bool",
-      "D": "torch.float16"
-    }
-  },
-  {
-    "id": 305,
-    "a": "A",
-    "q": "使用nn.BCEWithLogitsLoss()做二元分類時,target y的常見型態是?",
-    "o": {
-      "A": "float (0/1)或同 shape 的float tensor",
-      "B": "必為 one-hot 長度2",
-      "C": "必為long 類別索引",
-      "D": "必為字串標籤"
-    }
-  },
-  {
-    "id": 306,
-    "a": "A",
-    "q": "使用nn.MSELoss()做回歸時,下列哪個敘述較正確?",
-    "o": {
-      "A": "輸出與target shape 需對齊(可透過 squeeze/reshape)",
-      "B": "輸出必須先做 softmax",
-      "C": "target必為long",
-      "D": "輸出必為 one-hot"
-    }
-  },
-  {
-    "id": 307,
-    "a": "A",
-    "q": "sigmoid(-3)的值最接近下列哪一個?(小數第4位)",
-    "o": {
-      "A": "0.0474",
-      "B": "0.1192",
-      "C": "0.018",
-      "D": "0.9526"
-    }
-  },
-  {
-    "id": 308,
-    "a": "A",
-    "q": "logits [0.0, 0.0, 0.0, 0.0],softmax後第1個元素p0最接近?(小數第4位)",
-    "o": {
-      "A": "0.25",
-      "B": "0.25",
-      "C": "0.32",
-      "D": "0.18"
-    }
-  },
-  {
-    "id": 309,
-    "a": "A",
-    "q": "若正確類別機率 p=0.05,交叉熵L=-ln(p)的值最接近?(小數第4位)",
-    "o": {
-      "A": "2.9957",
-      "B": "2.3026",
-      "C": "9.2103",
-      "D": "4.4936"
-    }
-  },
-  {
-    "id": 310,
-    "a": "A",
-    "q": "兩層 MLP: Linear(784→128)、Linear(128→10),皆含bias。總參數量為?",
-    "o": {
-      "A": "101770",
-      "B": "101632",
-      "C": "101632",
-      "D": "101780"
-    }
-  },
-  {
-    "id": 311,
-    "a": "B",
-    "q": "XOR 問題無法用單層感知器解決的主要原因是?",
-    "o": {
-      "A": "資料太少",
-      "B": "線性不可分",
-      "C": "需要卷積",
-      "D": "需要LSTM"
-    }
-  },
-  {
-    "id": 312,
-    "a": "B",
-    "q": "對二元分類使用 sigmoid+BCE(單一樣本),常見的簡化梯度dL/dz為?",
-    "o": {
-      "A": "y-y_hat",
-      "B": "y_hat - y",
-      "C": "y_hat*(1-y_hat)",
-      "D": "(y_hat - y)^2"
-    }
-  },
-  {
-    "id": 313,
-    "a": "A",
-    "q": "對 softmax + cross-entropy(單一樣本),對logits 的梯度常見形式為?",
-    "o": {
-      "A": "p - y_onehot",
-      "B": "y_onehot -p",
-      "C": "p*(1-p)",
-      "D": "(p - y_onehot)^2"
-    }
-  },
-  {
-    "id": 314,
-    "a": "B",
-    "q": "softmax 常用z-max(z)的主要目的?",
-    "o": {
-      "A": "使輸出更稀疏",
-      "B": "避免exp 溢位(overflow)",
-      "C": "保證梯度為0",
-      "D": "讓輸出變整數"
-    }
-  },
-  {
-    "id": 315,
-    "a": "B",
-    "q": "學習率過大最可能導致?",
-    "o": {
-      "A": "收斂更快且更穩",
-      "B": "震盪或發散",
-      "C": "一定會過擬合",
-      "D": "梯度必定為0"
-    }
-  },
-  {
-    "id": 316,
-    "a": "B",
-    "q": "在反向傳播中,鏈式法則的作用是?",
-    "o": {
-      "A": "把梯度相加",
-      "B": "把梯度沿計算圖逐層傳遞並相乘",
-      "C": "把 loss變小",
-      "D": "自動選擇 optimizer"
-    }
-  },
-  {
-    "id": 317,
-    "a": "A",
-    "q": "同上設定(Cin=3, Cout=16, K=5,含bias),該Conv2d 的參數量為?",
-    "o": {
-      "A": "1216",
-      "B": "1200",
-      "C": "1200",
-      "D": "1219"
-    }
-  },
-  {
-    "id": 318,
-    "a": "A",
-    "q": "輸入影像 128×128 3,Conv2d(K=7, S=2, P=3, out_channels=64,含bias)。輸出尺寸為?",
-    "o": {
-      "A": "64x64x64",
-      "B": "128x128x64",
-      "C": "64x64x3",
-      "D": "63x63x64"
-    }
-  }
-];
+  <script>
+    // --- 0. THEME HELPER ---
+    function getThemeColor() { return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? '#f1f5f9' : '#1e293b'; }
+    function getGridColor() { return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? '#334155' : '#e2e8f0'; }
 
+    // --- 1. DATA LOADING ---
+    const filename = "/network-quiz_pool.json";
+    let questionPool = [];
 
-    // --- 2. APP STATE ---
+    async function loadQuestions() {
+      try {
+        const response = await fetch(`${filename}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        const rawData = await response.json();
+        questionPool = rawData.map(item => ({
+          id: item.id, q: item.question, a: item.ans, o: item.option, explanation: item.detail
+        }));
+        initDashboard();
+      } catch (error) {
+        console.error('Error:', error);
+        alert('讀取失敗，請檢查 console 或確認是否使用 Web Server 執行。');
+      }
+    }
+
+    // --- 2. APP STATE & CONFIG ---
     let currentQuestions = [];
     let userAnswers = {};
     let timerInterval;
     let timeElapsed = 0;
 
-    // --- 3. STORAGE UTILS ---
-    function getHistory() { try { return JSON.parse(localStorage.getItem('ml_quiz_history') || '[]'); } catch { return []; } }
-    function saveHistory(record) { const history = getHistory(); history.push(record); localStorage.setItem('ml_quiz_history', JSON.stringify(history)); }
-    function getWrongHistory() { try { return JSON.parse(localStorage.getItem('ml_quiz_wrong_qs') || '{}'); } catch { return {}; } }
-    function saveWrongHistory(wrongIds) {
-        const wrongStore = getWrongHistory();
-        wrongIds.forEach(id => { wrongStore[id] = (wrongStore[id] || 0) + 1; });
-        localStorage.setItem('ml_quiz_wrong_qs', JSON.stringify(wrongStore));
-    }
-    function getWeights() { try { return JSON.parse(localStorage.getItem('ml_quiz_weights') || '{}'); } catch { return {}; } }
-    function saveWeights(weights) { localStorage.setItem('ml_quiz_weights', JSON.stringify(weights)); }
-    function getSeenIds() { try { return JSON.parse(localStorage.getItem('ml_quiz_seen_ids') || '[]'); } catch { return []; } }
-    function saveSeenIds(ids) { localStorage.setItem('ml_quiz_seen_ids', JSON.stringify(ids)); }
-
-    // --- 4. CORE LOGIC (Weighted & Spaced Repetition) ---
+    // 權重演算法參數
     const DEFAULT_WEIGHT = 10;
     const WEIGHT_INC_WRONG = 10;
     const WEIGHT_DEC_CORRECT = 2;
     const MIN_WEIGHT = 1;
 
-    window.showView = function(viewId) {
-        document.querySelectorAll('.view').forEach(el => el.classList.remove('active-view'));
-        document.getElementById(viewId).classList.add('active-view');
+    // --- 3. STORAGE UTILS (Enhanced) ---
+    function getHistory() { try { return JSON.parse(localStorage.getItem('quiz_history') || '[]'); } catch { return []; } }
+    function saveHistory(record) { const h = getHistory(); h.push(record); localStorage.setItem('quiz_history', JSON.stringify(h)); }
+
+    function getWrongHistory() { try { return JSON.parse(localStorage.getItem('quiz_wrong_qs') || '{}'); } catch { return {}; } }
+    function saveWrongHistory(wrongIds) {
+      const w = getWrongHistory();
+      wrongIds.forEach(id => { w[id] = (w[id] || 0) + 1; });
+      localStorage.setItem('quiz_wrong_qs', JSON.stringify(w));
     }
 
-    window.startQuiz = function() {
-        const pool = (typeof questionPool !== 'undefined') ? questionPool : [];
-        if(pool.length === 0) { alert("讀取不到題庫資料。"); return; }
+    // [新增] 權重與已讀紀錄
+    function getWeights() { try { return JSON.parse(localStorage.getItem('quiz_weights') || '{}'); } catch { return {}; } }
+    function saveWeights(weights) { localStorage.setItem('quiz_weights', JSON.stringify(weights)); }
+    function getSeenIds() { try { return JSON.parse(localStorage.getItem('quiz_seen_ids') || '[]'); } catch { return []; } }
+    function saveSeenIds(ids) { localStorage.setItem('quiz_seen_ids', JSON.stringify(ids)); }
 
-        let seenIds = getSeenIds();
-        if (seenIds.length >= pool.length) {
-            alert("恭喜！你已經完成了一輪所有題目。系統將重置進度，開啟新的一輪刷題！");
-            seenIds = [];
-            saveSeenIds([]);
-        }
-
-        const weights = getWeights();
-        const unseenPool = pool.filter(q => !seenIds.includes(q.id));
-        const seenPool = pool.filter(q => seenIds.includes(q.id));
-
-        const TOTAL_Q = 20;
-        const TARGET_UNSEEN = 14; 
-        let selectedQuestions = [];
-
-        // Step A: Pick Unseen
-        const shuffledUnseen = [...unseenPool].sort(() => 0.5 - Math.random());
-        const takeUnseenCount = Math.min(TARGET_UNSEEN, shuffledUnseen.length);
-        selectedQuestions = selectedQuestions.concat(shuffledUnseen.slice(0, takeUnseenCount));
-
-        // Step B: Pick Seen (Weighted)
-        const slotsRemaining = TOTAL_Q - selectedQuestions.length;
-        if (slotsRemaining > 0) {
-            if (seenPool.length > 0) {
-                selectedQuestions = selectedQuestions.concat(pickWeightedQuestions(seenPool, weights, slotsRemaining));
-            } else {
-                // Not enough seen, take more unseen if avail
-                selectedQuestions = selectedQuestions.concat(shuffledUnseen.slice(takeUnseenCount, takeUnseenCount + slotsRemaining));
-            }
-        }
-
-        currentQuestions = selectedQuestions.sort(() => 0.5 - Math.random());
-        userAnswers = {};
-        renderQuiz();
-        startTimer();
-        window.showView('view-quiz');
+    // --- 4. CORE LOGIC ---
+    window.showView = function (viewId) {
+      document.querySelectorAll('.view').forEach(el => el.classList.remove('active-view'));
+      document.getElementById(viewId).classList.add('active-view');
+      if (viewId === 'view-dashboard') initDashboard();
     }
 
+    // [修改] 啟動測驗：改為權重演算法
+    window.startQuiz = function () {
+      if (questionPool.length === 0) { alert("題庫載入中或為空"); return; }
+
+      let seenIds = getSeenIds();
+      // 若全數做完，重置進度
+      if (seenIds.length >= questionPool.length) {
+        alert("恭喜！你已經完成了一輪所有題目。系統將重置進度，開啟新的一輪刷題！");
+        seenIds = [];
+        saveSeenIds([]);
+      }
+
+      const weights = getWeights();
+      const unseenPool = questionPool.filter(q => !seenIds.includes(q.id));
+      const seenPool = questionPool.filter(q => seenIds.includes(q.id));
+
+      const TOTAL_Q = 20;
+      const TARGET_UNSEEN = 14;
+      let selectedQuestions = [];
+
+      // 1. 優先選未做過的
+      const shuffledUnseen = [...unseenPool].sort(() => 0.5 - Math.random());
+      const takeUnseenCount = Math.min(TARGET_UNSEEN, shuffledUnseen.length);
+      selectedQuestions = selectedQuestions.concat(shuffledUnseen.slice(0, takeUnseenCount));
+
+      // 2. 剩餘名額用權重選已做過的
+      const slotsRemaining = TOTAL_Q - selectedQuestions.length;
+      if (slotsRemaining > 0) {
+        if (seenPool.length > 0) {
+          selectedQuestions = selectedQuestions.concat(pickWeightedQuestions(seenPool, weights, slotsRemaining));
+        } else {
+          // 若沒做過的題目很多，補未做過的
+          selectedQuestions = selectedQuestions.concat(shuffledUnseen.slice(takeUnseenCount, takeUnseenCount + slotsRemaining));
+        }
+      }
+
+      currentQuestions = selectedQuestions.sort(() => 0.5 - Math.random());
+      userAnswers = {};
+      renderQuiz();
+      startTimer();
+      window.showView('view-quiz');
+    }
+
+    // [新增] 加權隨機抽取函數
     function pickWeightedQuestions(pool, weightMap, count) {
-        let candidates = [...pool];
-        let selected = [];
-        for (let i = 0; i < count; i++) {
-            if (candidates.length === 0) break;
-            let totalWeight = 0;
-            candidates.forEach(q => totalWeight += (weightMap[q.id] || DEFAULT_WEIGHT));
-            let randomVal = Math.random() * totalWeight;
-            let currentSum = 0;
-            for (let j = 0; j < candidates.length; j++) {
-                const w = weightMap[candidates[j].id] || DEFAULT_WEIGHT;
-                currentSum += w;
-                if (currentSum >= randomVal) {
-                    selected.push(candidates[j]);
-                    candidates.splice(j, 1);
-                    break;
-                }
-            }
+      let candidates = [...pool];
+      let selected = [];
+      for (let i = 0; i < count; i++) {
+        if (candidates.length === 0) break;
+        let totalWeight = 0;
+        candidates.forEach(q => totalWeight += (weightMap[q.id] || DEFAULT_WEIGHT));
+        let randomVal = Math.random() * totalWeight;
+        let currentSum = 0;
+        for (let j = 0; j < candidates.length; j++) {
+          const w = weightMap[candidates[j].id] || DEFAULT_WEIGHT;
+          currentSum += w;
+          if (currentSum >= randomVal) {
+            selected.push(candidates[j]);
+            candidates.splice(j, 1);
+            break;
+          }
         }
-        return selected;
+      }
+      return selected;
     }
 
-    window.submitQuiz = function() {
-        clearInterval(timerInterval);
-        let correctCount = 0;
-        let wrongIds = [];
-        let seenIds = getSeenIds();
-        let weights = getWeights();
-        
-        const currentIds = currentQuestions.map(q => q.id);
-        seenIds = [...new Set([...seenIds, ...currentIds])];
-        saveSeenIds(seenIds);
+    // [修改] 送出試卷：更新權重與進度
+    window.submitQuiz = function () {
+      clearInterval(timerInterval);
+      let correctCount = 0;
+      let wrongIds = [];
+      let seenIds = getSeenIds();
+      let weights = getWeights();
 
-        currentQuestions.forEach(q => {
-            const isCorrect = (userAnswers[q.id] === q.a);
-            const currentW = weights[q.id] || DEFAULT_WEIGHT;
-            if (isCorrect) {
-                correctCount++;
-                weights[q.id] = Math.max(MIN_WEIGHT, currentW - WEIGHT_DEC_CORRECT);
-            } else {
-                wrongIds.push(q.id);
-                weights[q.id] = currentW + WEIGHT_INC_WRONG;
-            }
-        });
+      const currentIds = currentQuestions.map(q => q.id);
+      seenIds = [...new Set([...seenIds, ...currentIds])]; // 更新已看過的題目
+      saveSeenIds(seenIds);
 
-        saveWeights(weights);
-        const score = correctCount * 5; 
-        const accuracy = (currentQuestions.length > 0) ? (correctCount / currentQuestions.length * 100).toFixed(0) : 0;
+      currentQuestions.forEach(q => {
+        const currentW = weights[q.id] || DEFAULT_WEIGHT;
+        if (userAnswers[q.id] === q.a) {
+          correctCount++;
+          // 答對減權重 (最少為1)
+          weights[q.id] = Math.max(MIN_WEIGHT, currentW - WEIGHT_DEC_CORRECT);
+        } else {
+          wrongIds.push(q.id);
+          // 答錯加權重
+          weights[q.id] = currentW + WEIGHT_INC_WRONG;
+        }
+      });
 
-        saveHistory({ date: new Date().toISOString(), score: score, correctCount: correctCount, timeSeconds: timeElapsed });
-        saveWrongHistory(wrongIds);
+      saveWeights(weights); // 儲存權重
 
-        document.getElementById('result-score').innerText = score;
-        document.getElementById('result-accuracy').innerText = accuracy + '%';
-        
-        const m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
-        const s = (timeElapsed % 60).toString().padStart(2, '0');
-        document.getElementById('result-time').innerText = `${m}:${s}`;
+      const score = correctCount * 5;
+      const accuracy = (currentQuestions.length > 0) ? (correctCount / currentQuestions.length * 100).toFixed(0) : 0;
 
-        renderReview(wrongIds);
-        window.showView('view-result');
+      saveHistory({ date: new Date().toISOString(), score: score, correctCount: correctCount, timeSeconds: timeElapsed });
+      saveWrongHistory(wrongIds);
+
+      document.getElementById('result-score').innerText = score;
+      document.getElementById('result-accuracy').innerText = accuracy + '%';
+
+      const m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+      const s = (timeElapsed % 60).toString().padStart(2, '0');
+      document.getElementById('result-time').innerText = `${m}:${s}`;
+
+      renderReview(wrongIds);
+      window.showView('view-result');
     }
 
-    window.showDashboard = function() { initDashboard(); window.showView('view-dashboard'); }
-    window.clearData = function() {
-        if(confirm('確定要清除所有紀錄與權重嗎？')) {
-            localStorage.removeItem('ml_quiz_history');
-            localStorage.removeItem('ml_quiz_wrong_qs');
-            localStorage.removeItem('ml_quiz_weights');
-            localStorage.removeItem('ml_quiz_seen_ids');
-            initDashboard();
-        }
+    window.showDashboard = function () { initDashboard(); window.showView('view-dashboard'); }
+
+    // [修改] 清除所有資料
+    window.clearData = function () {
+      if (confirm('確定要清除所有歷史紀錄、權重與進度嗎？')) {
+        localStorage.removeItem('quiz_history');
+        localStorage.removeItem('quiz_wrong_qs');
+        localStorage.removeItem('quiz_weights'); // 新增
+        localStorage.removeItem('quiz_seen_ids'); // 新增
+        initDashboard();
+      }
     }
 
     // --- 5. RENDER HELPERS ---
     function renderQuiz() {
-        const container = document.getElementById('quiz-container');
-        container.innerHTML = '';
-        currentQuestions.forEach((q, idx) => {
-            const block = document.createElement('div');
-            block.className = 'question-block';
-            block.innerHTML = `
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+      currentQuestions.forEach((q, idx) => {
+        const opts = Object.keys(q.o).sort();
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        block.innerHTML = `
                 <div style="font-weight:bold; margin-bottom:10px;">${idx + 1}. ${q.q}</div>
                 <div class="options-grid">
-                    ${['A','B','C','D'].map(opt => `
+                    ${opts.map(opt => `
                         <div>
                             <input type="radio" name="q-${q.id}" id="q-${q.id}-${opt}" value="${opt}" onchange="recordAnswer(${q.id}, '${opt}')">
-                            <label class="option-label" for="q-${q.id}-${opt}"><strong>(${opt})</strong> ${q.o[opt] || ''}</label>
+                            <label class="option-label" for="q-${q.id}-${opt}"><strong>(${opt})</strong> ${q.o[opt]}</label>
                         </div>
                     `).join('')}
                 </div>`;
-            container.appendChild(block);
-        });
+        container.appendChild(block);
+      });
     }
 
-    window.recordAnswer = function(qId, val) { userAnswers[qId] = val; }
+    window.recordAnswer = function (qId, val) { userAnswers[qId] = val; }
 
     function startTimer() {
-        timeElapsed = 0;
-        clearInterval(timerInterval);
-        const timerEl = document.getElementById('timer');
-        timerInterval = setInterval(() => {
-            timeElapsed++;
-            const m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
-            const s = (timeElapsed % 60).toString().padStart(2, '0');
-            timerEl.innerText = `${m}:${s}`;
-        }, 1000);
+      timeElapsed = 0;
+      clearInterval(timerInterval);
+      const timerEl = document.getElementById('timer');
+      timerInterval = setInterval(() => {
+        timeElapsed++;
+        const m = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+        const s = (timeElapsed % 60).toString().padStart(2, '0');
+        timerEl.innerText = `${m}:${s}`;
+      }, 1000);
     }
 
     function renderReview(wrongIds) {
-        const container = document.getElementById('review-container');
-        container.innerHTML = '';
-        if (wrongIds.length === 0) {
-            container.innerHTML = '<p style="color:var(--success); font-weight:bold;">本次全對！</p>';
-            return;
-        }
-        wrongIds.forEach(id => {
-            const q = currentQuestions.find(item => item.id === id);
-            const userAns = userAnswers[id] || '未作答';
-            const div = document.createElement('div');
-            div.className = 'review-item';
-            div.innerHTML = `
+      const container = document.getElementById('review-container');
+      container.innerHTML = '';
+      if (wrongIds.length === 0) {
+        container.innerHTML = '<p style="color:var(--success); font-weight:bold;">本次全對！</p>';
+        return;
+      }
+      wrongIds.forEach(id => {
+        const q = currentQuestions.find(item => item.id === id);
+        const userAns = userAnswers[id] || '未作答';
+        const div = document.createElement('div');
+        div.className = 'review-item';
+        div.innerHTML = `
                 <div><strong>題目:</strong> ${q.q}</div>
                 <div style="margin-top:5px;">
                     <span class="wrong-ans">您的答案: ${userAns}</span> | 
                     <span class="correct-ans">正確答案: ${q.a}</span>
                 </div>
-                <div style="margin-top:5px; font-size:0.9em; color:var(--text-muted);">${q.o[q.a]}</div>`;
-            container.appendChild(div);
-        });
+                ${q.explanation ? `<div class="explanation"><strong>詳解:</strong> ${q.explanation}</div>` : ''}
+            `;
+        container.appendChild(div);
+      });
     }
 
+    // [修改] 初始化儀表板：增加進度條計算
     function initDashboard() {
-        const poolLen = (typeof questionPool !== 'undefined') ? questionPool.length : 0;
-        document.getElementById('total-pool-size').innerText = poolLen;
-        
-        const history = getHistory();
-        const wrongStore = getWrongHistory();
-        const seenIds = getSeenIds();
+      const poolLen = questionPool.length;
+      document.getElementById('total-pool-size').innerText = poolLen;
 
-        const coveragePct = poolLen > 0 ? ((seenIds.length / poolLen) * 100).toFixed(1) : 0;
-        document.getElementById('coverage-bar').style.width = `${coveragePct}%`;
-        document.getElementById('coverage-text').innerText = `${seenIds.length} / ${poolLen} (${coveragePct}%)`;
+      const history = getHistory();
+      const wrongStore = getWrongHistory();
+      const seenIds = getSeenIds(); // 新增
 
-        if (history.length > 0) {
-            const totalScore = history.reduce((acc, cur) => acc + cur.score, 0);
-            const accuracy = ((history.reduce((acc, cur) => acc + cur.correctCount, 0) / (history.length * 20)) * 100).toFixed(1);
-            document.getElementById('avg-score').innerText = (totalScore / history.length).toFixed(1);
-            document.getElementById('total-accuracy').innerText = accuracy + '%';
-        } else {
-            document.getElementById('avg-score').innerText = '--';
-            document.getElementById('total-accuracy').innerText = '--%';
-        }
-        document.getElementById('total-wrong-count').innerText = Object.keys(wrongStore).length;
+      // 更新進度條 UI
+      const coveragePct = poolLen > 0 ? ((seenIds.length / poolLen) * 100).toFixed(1) : 0;
+      const barEl = document.getElementById('coverage-bar');
+      const textEl = document.getElementById('coverage-text');
+      if (barEl) barEl.style.width = `${coveragePct}%`;
+      if (textEl) textEl.innerText = `${seenIds.length} / ${poolLen} (${coveragePct}%)`;
 
-        renderChart(history);
-        renderWrongList(wrongStore);
+      if (history.length > 0) {
+        const totalScore = history.reduce((acc, cur) => acc + cur.score, 0);
+        const accuracy = ((history.reduce((acc, cur) => acc + cur.correctCount, 0) / (history.length * 20)) * 100).toFixed(1);
+        document.getElementById('avg-score').innerText = (totalScore / history.length).toFixed(1);
+        document.getElementById('total-accuracy').innerText = accuracy + '%';
+      } else {
+        document.getElementById('avg-score').innerText = '--';
+        document.getElementById('total-accuracy').innerText = '--%';
+      }
+      document.getElementById('total-wrong-count').innerText = Object.keys(wrongStore).length;
+
+      renderChart(history);
+      renderWrongList(wrongStore);
     }
 
     function renderChart(history) {
-        const ctx = document.getElementById('scoreChart').getContext('2d');
-        if (window.myChart) window.myChart.destroy();
-        const recentHistory = history.slice(-20);
-        
-        // [新增] 偵測目前是否為深色模式，以調整圖表文字顏色
-        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const textColor = isDarkMode ? '#cbd5e1' : '#64748b'; // Slate 300 vs Slate 500
-        const gridColor = isDarkMode ? '#334155' : '#e2e8f0'; // Slate 700 vs Slate 200
+      const ctx = document.getElementById('scoreChart').getContext('2d');
+      const textColor = getThemeColor();
+      const gridColor = getGridColor();
 
-        window.myChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: recentHistory.map((_, i) => `測驗 ${history.length - recentHistory.length + i + 1}`),
-                datasets: [{
-                    label: '得分',
-                    data: recentHistory.map(h => h.score),
-                    borderColor: '#2563eb',
-                    tension: 0.1,
-                    pointBackgroundColor: '#2563eb'
-                }]
-            },
-            options: { 
-                responsive: true,
-                scales: { 
-                    y: { 
-                        beginAtZero: true, 
-                        max: 100,
-                        ticks: { color: textColor },
-                        grid: { color: gridColor }
-                    },
-                    x: {
-                        ticks: { color: textColor },
-                        grid: { color: gridColor }
-                    }
-                },
-                plugins: {
-                    legend: { labels: { color: textColor } }
-                }
-            }
-        });
+      if (window.myChart) window.myChart.destroy();
+
+      Chart.defaults.color = textColor;
+      Chart.defaults.borderColor = gridColor;
+
+      window.myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: history.map((_, i) => `測驗 ${i + 1}`),
+          datasets: [{
+            label: '得分',
+            data: history.map(h => h.score),
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+            tension: 0.1,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true, max: 100, grid: { color: gridColor } },
+            x: { grid: { color: gridColor } }
+          },
+          plugins: { legend: { labels: { color: textColor } } }
+        }
+      });
     }
 
     function renderWrongList(wrongStore) {
-        const listEl = document.getElementById('wrong-history-list');
-        listEl.innerHTML = '';
-        const sortedIds = Object.keys(wrongStore).sort((a,b) => wrongStore[b] - wrongStore[a]);
-        
-        if (sortedIds.length === 0) {
-            listEl.innerHTML = '<p style="color:var(--text-muted)">目前沒有錯題紀錄。</p>';
-            return;
-        }
-
-        if(typeof questionPool === 'undefined') return;
-
-        sortedIds.slice(0, 50).forEach(id => {
-            const q = questionPool.find(item => item.id == id);
-            if (!q) return; 
-            
-            const div = document.createElement('div');
-            div.className = 'review-item';
-            div.innerHTML = `
+      const listEl = document.getElementById('wrong-history-list');
+      listEl.innerHTML = '';
+      const sortedIds = Object.keys(wrongStore).sort((a, b) => wrongStore[b] - wrongStore[a]);
+      if (sortedIds.length === 0) {
+        listEl.innerHTML = '<p style="color:var(--text-muted)">目前沒有錯題紀錄。</p>';
+        return;
+      }
+      sortedIds.slice(0, 50).forEach(id => {
+        const q = questionPool.find(item => item.id == id);
+        if (!q) return;
+        const div = document.createElement('div');
+        div.className = 'review-item';
+        div.innerHTML = `
                 <div><strong>[題號 ${q.id}]</strong> (錯誤次數: ${wrongStore[id]})</div>
                 <div style="margin:5px 0;">${q.q}</div>
                 <div class="correct-ans">正確答案: ${q.a} (${q.o[q.a]})</div>
+                <div class="explanation">知識點: ${q.explanation || '無'}</div>
             `;
-            listEl.appendChild(div);
-        });
+        listEl.appendChild(div);
+      });
     }
 
-    initDashboard();
-</script>
+    // Watch for theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', initDashboard);
+
+    // Init on Load
+    loadQuestions();
+  </script>
 </body>
+
 </html>
