@@ -285,7 +285,7 @@
     function getGridColor() { return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? '#334155' : '#e2e8f0'; }
 
     // --- 1. DATA LOADING ---
-    const filename = "/network-quiz_pool.json";
+    const filename = "./network-quiz_pool.json";
     let questionPool = [];
 
     async function loadQuestions() {
@@ -619,3 +619,4 @@
 </body>
 
 </html>
+
